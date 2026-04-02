@@ -1,0 +1,88 @@
+services:
+  # ── PostgreSQL Database ──────────────────────────────────────────
+  postgres:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    ports:
+      - "8090:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: tamagotchi_server
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-changeme_dev_only}"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ── Redis Cache ──────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "8091:6379"
+    command: redis-server --requirepass "${REDIS_PASSWORD:-changeme_dev_only}"
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-changeme_dev_only}", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ── Serverpod Backend ────────────────────────────────────────────
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8080:8080"   # API
+      - "8081:8081"   # Insights
+      - "8082:8082"   # Web
+    environment:
+      runmode: production
+      serverid: default
+      logging: normal
+      role: monolith
+      SERVERPOD_DATABASE_HOST: postgres
+      SERVERPOD_DATABASE_PORT: "5432"
+      SERVERPOD_DATABASE_NAME: tamagotchi_server
+      SERVERPOD_DATABASE_USER: postgres
+      SERVERPOD_DATABASE_PASSWORD: "${POSTGRES_PASSWORD:-changeme_dev_only}"
+      SERVERPOD_REDIS_HOST: redis
+      SERVERPOD_REDIS_PORT: "6379"
+      SERVERPOD_REDIS_PASSWORD: "${REDIS_PASSWORD:-changeme_dev_only}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # ── Flutter Web App (nginx) ──────────────────────────────────────
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - server
+
+  # ── Test Database (optional, for CI) ─────────────────────────────
+  postgres_test:
+    image: pgvector/pgvector:pg16
+    profiles: ["test"]
+    ports:
+      - "9090:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: tamagotchi_server_test
+      POSTGRES_PASSWORD: "${POSTGRES_TEST_PASSWORD:-changeme_test_only}"
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+  postgres_test_data:
