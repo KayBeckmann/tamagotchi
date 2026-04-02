@@ -1,0 +1,44 @@
+services:
+  # Development services
+  postgres:
+    image: pgvector/pgvector:pg16
+    ports:
+      - "8090:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: tamagotchi_server
+      POSTGRES_PASSWORD: "tQhhSiVy0RKGdQiDyiLCuO20Nh5kOU1q"
+    volumes:
+      - tamagotchi_server_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:6.2.6
+    ports:
+      - "8091:6379"
+    command: redis-server --requirepass "7xMOUOiYZ5WEkKcO7ES9COphkdGSnYBF"
+    environment:
+      - REDIS_REPLICATION_MODE=master
+
+  # Test services
+  postgres_test:
+    image: pgvector/pgvector:pg16
+    ports:
+      - "9090:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: tamagotchi_server_test
+      POSTGRES_PASSWORD: "QlLac42jMDrs6OL7pH37jbuZrBNGp1H1"
+    volumes:
+      - tamagotchi_server_test_data:/var/lib/postgresql/data
+
+  redis_test:
+    image: redis:6.2.6
+    ports:
+      - "9091:6379"
+    command: redis-server --requirepass "lKWoOs76L9ZF0B8HI94VynCBg6C77pqY"
+    environment:
+      - REDIS_REPLICATION_MODE=master
+
+volumes:
+  tamagotchi_server_data:
+  tamagotchi_server_test_data:
