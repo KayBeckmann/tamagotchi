@@ -38,13 +38,13 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 ## Phase 2: Benutzerverwaltung & Authentifizierung
 
 ### 2.1 Backend – Auth-Service
-- [ ] Registrierung (E-Mail + Passwort)
-- [ ] Login / Logout
-- [ ] JWT-Token-Generierung und -Validierung
-- [ ] Refresh-Token-Mechanismus
-- [ ] Passwort-Zurücksetzen (E-Mail-Versand)
-- [ ] Account-Löschung (DSGVO-konform)
-- [ ] Rate Limiting für Auth-Endpoints
+- [x] Registrierung (E-Mail + Passwort)
+- [x] Login / Logout
+- [x] JWT-Token-Generierung und -Validierung
+- [x] Refresh-Token-Mechanismus
+- [x] Passwort-Zurücksetzen (E-Mail-Versand)
+- [x] Account-Löschung (DSGVO-konform)
+- [x] Rate Limiting für Auth-Endpoints
 
 ### 2.2 Frontend – Auth-UI
 - [ ] Responsive Login-Screen
