@@ -19,9 +19,9 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 ### 1.2 Backend-Architektur
 - [x] Backend mit **Dart (Serverpod)** aufsetzen
 - [x] Datenbankschema entwerfen (PostgreSQL)
-- [ ] REST-API-Schnittstellendefinition (Serverpod Endpoints)
+- [x] REST-API-Schnittstellendefinition (Serverpod Endpoints)
 - [x] Authentifizierungs-Strategie festlegen (JWT + Refresh Tokens)
-- [ ] WebSocket-Strategie für Echtzeit-Features (Arena, Statusupdates)
+- [x] WebSocket-Strategie für Echtzeit-Features (Arena, Statusupdates)
 - [x] Docker-Compose für lokale Entwicklung
 
 ### 1.3 Datenmodelle (Entwurf)
