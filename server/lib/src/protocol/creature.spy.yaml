@@ -1,0 +1,58 @@
+### Creature - Tamagotchi-Basismodell (Tier oder Monster)
+class: Creature
+table: creatures
+fields:
+  ### Ownership
+  userId: int, relation(parent=users)
+  creatureTypeId: int, relation(parent=creature_types)
+
+  ### Identity
+  name: String
+  isActive: bool  # Currently selected creature
+
+  ### Development Stage: 'egg', 'baby', 'child', 'teen', 'adult'
+  developmentStage: String
+  ageInDays: int
+  birthDate: DateTime
+
+  ### Current Status Values (0-100)
+  hunger: int
+  happiness: int
+  energy: int
+  health: int
+  cleanliness: int
+
+  ### Physical
+  weight: double
+
+  ### Battle Stats (modified by training)
+  trainedAttack: int
+  trainedDefense: int
+  trainedSpeed: int
+
+  ### Battle-specific HP (separate from health status)
+  maxBattleHp: int
+  currentBattleHp: int
+
+  ### State
+  isSleeping: bool
+  isSick: bool
+  isStunned: bool  # After tournament loss
+  stunnedUntil: DateTime?
+
+  ### Death mechanics
+  neglectDays: int  # Days with health = 0
+  isDead: bool
+  deathDate: DateTime?
+  deathCause: String?  # 'neglect', null if alive
+
+  ### Timestamps
+  lastInteractionAt: DateTime
+  lastStatusUpdateAt: DateTime
+  createdAt: DateTime
+
+indexes:
+  creature_user_idx:
+    fields: userId
+  creature_active_idx:
+    fields: userId, isActive

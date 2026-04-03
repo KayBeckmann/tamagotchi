@@ -1,0 +1,52 @@
+### BattleRecord - Kampfhistorie
+class: BattleRecord
+table: battle_records
+fields:
+  ### Participants
+  creature1Id: int, relation(parent=creatures)
+  creature2Id: int, relation(parent=creatures)
+  user1Id: int, relation(parent=users)
+  user2Id: int, relation(parent=users)
+
+  ### Result
+  winnerId: int?  # Creature ID, null if draw
+  winnerUserId: int?  # User ID of winner
+
+  ### Battle Stats
+  creature1StartHp: int
+  creature2StartHp: int
+  creature1EndHp: int
+  creature2EndHp: int
+  totalRounds: int
+
+  ### Battle Type: 'arena', 'tournament', 'friendly'
+  battleType: String
+  tournamentId: int?  # If part of tournament
+
+  ### Rewards
+  winnerXpGained: int
+  loserXpGained: int
+  winnerSatoshisGained: int
+
+  ### ELO Changes
+  user1EloChange: int
+  user2EloChange: int
+
+  ### Battle Log (JSON string of moves)
+  battleLog: String
+
+  ### Timestamps
+  startedAt: DateTime
+  endedAt: DateTime
+
+indexes:
+  battle_creature1_idx:
+    fields: creature1Id
+  battle_creature2_idx:
+    fields: creature2Id
+  battle_user1_idx:
+    fields: user1Id
+  battle_user2_idx:
+    fields: user2Id
+  battle_tournament_idx:
+    fields: tournamentId

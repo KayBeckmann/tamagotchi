@@ -1,0 +1,23 @@
+### Friendship - Freundesliste
+class: Friendship
+table: friendships
+fields:
+  ### Users
+  userId: int, relation(parent=users)
+  friendId: int, relation(parent=users)
+
+  ### Status: 'pending', 'accepted', 'blocked'
+  status: String
+
+  ### Timestamps
+  requestedAt: DateTime
+  acceptedAt: DateTime?
+
+indexes:
+  friendship_user_idx:
+    fields: userId
+  friendship_friend_idx:
+    fields: friendId
+  friendship_pair_idx:
+    fields: userId, friendId
+    unique: true

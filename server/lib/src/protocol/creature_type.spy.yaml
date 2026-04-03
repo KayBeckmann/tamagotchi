@@ -1,0 +1,35 @@
+### CreatureType - Katalog aller wählbaren Kreaturen mit Basiswerten
+class: CreatureType
+table: creature_types
+fields:
+  ### Identification
+  name: String
+  description: String
+  category: String  # 'animal' or 'monster'
+
+  ### Base Stats for Battle
+  baseAttack: int
+  baseDefense: int
+  baseSpeed: int
+  baseHealth: int
+
+  ### Special Ability
+  specialAbilityName: String
+  specialAbilityDescription: String
+  specialAbilityCooldown: int  # in turns
+
+  ### Visuals
+  spriteSheetUrl: String
+  thumbnailUrl: String
+
+  ### Availability
+  isUnlockable: bool
+  unlockRequirement: String?  # e.g., 'story_chapter_5', 'achievement_x'
+
+  ### Timestamps
+  createdAt: DateTime
+
+indexes:
+  creature_type_name_idx:
+    fields: name
+    unique: true

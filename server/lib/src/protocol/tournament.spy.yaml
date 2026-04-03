@@ -1,0 +1,48 @@
+### Tournament - Turnierstruktur
+class: Tournament
+table: tournaments
+fields:
+  ### Basic Info
+  name: String
+  description: String
+
+  ### Format: 'single_elimination', 'double_elimination', 'round_robin'
+  format: String
+  maxParticipants: int  # 8, 16, 32
+
+  ### Status: 'registration', 'active', 'completed', 'cancelled'
+  status: String
+
+  ### Entry Fee & Prize Pool
+  entryFeeSatoshis: int
+  prizePoolSatoshis: int
+  platformFeeSatoshis: int  # Deducted fee
+
+  ### Prize Distribution (percentages)
+  firstPlacePct: int   # e.g., 70
+  secondPlacePct: int  # e.g., 20
+  thirdPlacePct: int   # e.g., 10
+
+  ### Timing
+  registrationStartAt: DateTime
+  registrationEndAt: DateTime
+  tournamentStartAt: DateTime
+  roundDurationHours: int  # Time limit per round
+
+  ### Bracket (JSON string)
+  bracketData: String?
+
+  ### Results
+  winnerId: int?  # User ID
+  secondPlaceId: int?
+  thirdPlaceId: int?
+
+  ### Timestamps
+  createdAt: DateTime
+  completedAt: DateTime?
+
+indexes:
+  tournament_status_idx:
+    fields: status
+  tournament_start_idx:
+    fields: tournamentStartAt

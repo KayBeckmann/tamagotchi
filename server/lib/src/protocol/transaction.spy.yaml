@@ -1,0 +1,44 @@
+### Transaction - Bitcoin-Transaktionen
+class: Transaction
+table: transactions
+fields:
+  userId: int, relation(parent=users)
+
+  ### Type: 'deposit', 'withdrawal', 'tournament_entry', 'tournament_prize',
+  ###       'arena_reward', 'shop_purchase', 'daily_bonus', 'trade'
+  type: String
+
+  ### Amount (positive = credit, negative = debit)
+  amountSatoshis: int
+
+  ### Balance after transaction
+  balanceAfter: int
+
+  ### Status: 'pending', 'confirmed', 'failed', 'cancelled'
+  status: String
+
+  ### Bitcoin Details (for deposits/withdrawals)
+  btcAddress: String?
+  btcTxId: String?
+  lightningInvoice: String?
+  lightningPaymentHash: String?
+  confirmations: int?
+
+  ### Reference (related entity)
+  referenceType: String?  # 'tournament', 'battle', 'shop', 'trade'
+  referenceId: int?
+
+  ### Description
+  description: String
+
+  ### Timestamps
+  createdAt: DateTime
+  confirmedAt: DateTime?
+
+indexes:
+  transaction_user_idx:
+    fields: userId
+  transaction_status_idx:
+    fields: status
+  transaction_btc_tx_idx:
+    fields: btcTxId

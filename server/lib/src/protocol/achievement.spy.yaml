@@ -1,0 +1,28 @@
+### Achievement - Errungenschaften im Spiel
+class: Achievement
+table: achievements
+fields:
+  ### Identification
+  code: String  # Unique identifier like 'first_win', 'ten_creatures'
+  name: String
+  description: String
+
+  ### Reward
+  rewardType: String  # 'satoshis', 'creature_slot', 'item', 'creature_unlock'
+  rewardValue: int    # Amount or ID depending on type
+  rewardItemId: int?
+
+  ### Requirements (JSON string with conditions)
+  requirements: String
+
+  ### Visuals
+  iconUrl: String
+  badgeUrl: String?
+
+  ### Timestamps
+  createdAt: DateTime
+
+indexes:
+  achievement_code_idx:
+    fields: code
+    unique: true

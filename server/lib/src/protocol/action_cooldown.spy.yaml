@@ -1,0 +1,17 @@
+### ActionCooldown - Cooldowns für Aktionen (Füttern, Spielen, etc.)
+class: ActionCooldown
+table: action_cooldowns
+fields:
+  creatureId: int, relation(parent=creatures)
+
+  ### Action Type: 'feed', 'play', 'train', 'medicine'
+  actionType: String
+
+  ### Cooldown
+  lastActionAt: DateTime
+  nextAvailableAt: DateTime
+
+indexes:
+  cooldown_creature_action_idx:
+    fields: creatureId, actionType
+    unique: true

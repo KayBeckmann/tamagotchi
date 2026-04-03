@@ -1,0 +1,14 @@
+### UserAchievement - Errungenschaften die ein User freigeschaltet hat
+class: UserAchievement
+table: user_achievements
+fields:
+  userId: int, relation(parent=users)
+  achievementId: int, relation(parent=achievements)
+  unlockedAt: DateTime
+  claimed: bool
+  claimedAt: DateTime?
+
+indexes:
+  user_achievement_idx:
+    fields: userId, achievementId
+    unique: true

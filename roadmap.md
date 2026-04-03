@@ -9,29 +9,29 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 ## Phase 1: Projektfundament & Architektur
 
 ### 1.1 Projektsetup
-- [ ] Flutter-Projekt initialisieren (Android, Windows, Linux, Web)
-- [ ] Ordnerstruktur festlegen (Feature-basiert)
-- [ ] State-Management wählen und einrichten (Riverpod)
-- [ ] Routing-Lösung einrichten (GoRouter)
-- [ ] CI/CD-Pipeline aufsetzen (GitHub Actions für Build & Test)
-- [ ] Linting-Regeln und Code-Conventions definieren
+- [x] Flutter-Projekt initialisieren (Android, Windows, Linux, Web)
+- [x] Ordnerstruktur festlegen (Feature-basiert)
+- [x] State-Management wählen und einrichten (Riverpod)
+- [x] Routing-Lösung einrichten (GoRouter)
+- [x] CI/CD-Pipeline aufsetzen (GitHub Actions für Build & Test)
+- [x] Linting-Regeln und Code-Conventions definieren
 
 ### 1.2 Backend-Architektur
-- [ ] Backend mit **Dart (Serverpod)** aufsetzen
-- [ ] Datenbankschema entwerfen (PostgreSQL)
+- [x] Backend mit **Dart (Serverpod)** aufsetzen
+- [x] Datenbankschema entwerfen (PostgreSQL)
 - [ ] REST-API-Schnittstellendefinition (Serverpod Endpoints)
-- [ ] Authentifizierungs-Strategie festlegen (JWT + Refresh Tokens)
+- [x] Authentifizierungs-Strategie festlegen (JWT + Refresh Tokens)
 - [ ] WebSocket-Strategie für Echtzeit-Features (Arena, Statusupdates)
-- [ ] Docker-Compose für lokale Entwicklung
+- [x] Docker-Compose für lokale Entwicklung
 
 ### 1.3 Datenmodelle (Entwurf)
-- [ ] `User` – Benutzerkonto, Profil, Erfahrungspunkte, Wallet
-- [ ] `Creature` – Tamagotchi-Basismodell (Tier oder Monster)
-- [ ] `CreatureType` – Katalog aller wählbaren Kreaturen mit Basiswerten
-- [ ] `CreatureStats` – Hunger, Glück, Energie, Gesundheit, Sauberkeit, Alter
-- [ ] `BattleRecord` – Kampfhistorie
-- [ ] `Tournament` – Turnierstruktur
-- [ ] `Transaction` – Bitcoin-Transaktionen
+- [x] `User` – Benutzerkonto, Profil, Erfahrungspunkte, Wallet
+- [x] `Creature` – Tamagotchi-Basismodell (Tier oder Monster)
+- [x] `CreatureType` – Katalog aller wählbaren Kreaturen mit Basiswerten
+- [x] `CreatureStats` – Hunger, Glück, Energie, Gesundheit, Sauberkeit, Alter (in Creature integriert)
+- [x] `BattleRecord` – Kampfhistorie
+- [x] `Tournament` – Turnierstruktur
+- [x] `Transaction` – Bitcoin-Transaktionen
 
 ---
 

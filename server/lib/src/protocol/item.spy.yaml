@@ -1,0 +1,33 @@
+### Item - Items im Spiel (Futter, Medizin, Spielzeug)
+class: Item
+table: items
+fields:
+  ### Identification
+  name: String
+  description: String
+  category: String  # 'food', 'medicine', 'toy', 'premium'
+
+  ### Effects
+  hungerEffect: int
+  happinessEffect: int
+  energyEffect: int
+  healthEffect: int
+  cleanlinessEffect: int
+  weightEffect: double
+
+  ### Shop
+  priceSatoshis: int
+  isAvailable: bool
+
+  ### Visuals
+  iconUrl: String
+
+  ### Timestamps
+  createdAt: DateTime
+
+indexes:
+  item_name_idx:
+    fields: name
+    unique: true
+  item_category_idx:
+    fields: category

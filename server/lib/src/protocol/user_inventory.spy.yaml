@@ -1,0 +1,16 @@
+### UserInventory - Items die ein User besitzt
+class: UserInventory
+table: user_inventory
+fields:
+  userId: int, relation(parent=users)
+  itemId: int, relation(parent=items)
+  quantity: int
+
+  ### Timestamps
+  acquiredAt: DateTime
+  updatedAt: DateTime
+
+indexes:
+  inventory_user_item_idx:
+    fields: userId, itemId
+    unique: true

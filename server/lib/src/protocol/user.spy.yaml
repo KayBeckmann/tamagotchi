@@ -1,0 +1,43 @@
+### User - Benutzerkonto, Profil, Erfahrungspunkte, Wallet
+class: User
+table: users
+fields:
+  ### Authentication
+  email: String
+  passwordHash: String
+  salt: String
+
+  ### Profile
+  username: String
+  avatarUrl: String?
+
+  ### Experience & Level
+  experiencePoints: int
+  level: int
+
+  ### Wallet
+  satoshiBalance: int
+  walletAddress: String?
+
+  ### Arena Rating
+  eloRating: int
+  totalWins: int
+  totalLosses: int
+
+  ### Account Status
+  isVerified: bool
+  isActive: bool
+  maxCreatureSlots: int
+
+  ### Timestamps
+  lastLoginAt: DateTime?
+  createdAt: DateTime
+  updatedAt: DateTime
+
+indexes:
+  user_email_idx:
+    fields: email
+    unique: true
+  user_username_idx:
+    fields: username
+    unique: true

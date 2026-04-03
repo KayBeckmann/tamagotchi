@@ -1,0 +1,18 @@
+### RefreshToken - JWT Refresh Tokens für Authentifizierung
+class: RefreshToken
+table: refresh_tokens
+fields:
+  userId: int, relation(parent=users)
+  token: String
+  deviceInfo: String?
+  ipAddress: String?
+  isRevoked: bool
+  expiresAt: DateTime
+  createdAt: DateTime
+
+indexes:
+  refresh_token_idx:
+    fields: token
+    unique: true
+  refresh_token_user_idx:
+    fields: userId

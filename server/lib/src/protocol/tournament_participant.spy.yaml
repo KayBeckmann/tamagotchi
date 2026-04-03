@@ -1,0 +1,24 @@
+### TournamentParticipant - Turnierteilnehmer
+class: TournamentParticipant
+table: tournament_participants
+fields:
+  tournamentId: int, relation(parent=tournaments)
+  userId: int, relation(parent=users)
+  creatureId: int, relation(parent=creatures)
+
+  ### Seeding & Position
+  seedNumber: int?
+  currentRound: int
+  isEliminated: bool
+
+  ### Payment Status
+  entryFeePaid: bool
+  paymentTransactionId: int?
+
+  ### Timestamps
+  registeredAt: DateTime
+
+indexes:
+  participant_tournament_user_idx:
+    fields: tournamentId, userId
+    unique: true
