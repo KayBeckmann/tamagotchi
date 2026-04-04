@@ -94,11 +94,11 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 - [ ] Cooldowns für Aktionen (z.B. Füttern max. alle 30 Min.)
 
 ### 3.4 Entwicklungsstufen
-- [ ] **Ei** (Tag 0) – Schlüpf-Animation
-- [ ] **Baby** (Tag 1–3) – eingeschränkte Interaktionen
-- [ ] **Kind** (Tag 4–7) – alle Grundinteraktionen verfügbar
-- [ ] **Jugendlich** (Tag 8–14) – Training und Arena freigeschaltet
-- [ ] **Erwachsen** (ab Tag 15) – Turnier-Teilnahme freigeschaltet
+- [x] **Ei** (Tag 0) – Schlüpf-Animation
+- [x] **Baby** (Tag 1–3) – eingeschränkte Interaktionen
+- [x] **Kind** (Tag 4–7) – alle Grundinteraktionen verfügbar
+- [x] **Jugendlich** (Tag 8–14) – Training und Arena freigeschaltet
+- [x] **Erwachsen** (ab Tag 15) – Turnier-Teilnahme freigeschaltet
 - [ ] Visuelle Veränderung pro Stufe (andere Sprites/Größe)
 
 ---
