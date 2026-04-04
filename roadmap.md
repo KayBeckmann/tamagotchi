@@ -52,7 +52,7 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 - [x] Passwort-vergessen-Flow
 - [x] Session-Management im Client (Secure Storage)
 - [x] Automatischer Token-Refresh
-- [ ] Offline-Erkennung und Hinweis
+- [x] Offline-Erkennung und Hinweis
 
 ---
 
