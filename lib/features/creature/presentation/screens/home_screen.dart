@@ -4,8 +4,11 @@ import 'package:go_router/go_router.dart';
 
 import '../../domain/models/creature.dart';
 import '../../domain/models/creature_type.dart';
+import '../../domain/models/action_cooldown.dart';
+import '../../domain/models/item.dart';
 import '../../data/creature_repository.dart';
 import '../providers/creature_provider.dart';
+import '../widgets/cooldown_indicator.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -126,14 +129,21 @@ class HomeScreen extends ConsumerWidget {
           _StatusCard(creature: creature),
           const SizedBox(height: 16),
 
+          // Cooldown display
+          _CooldownDisplay(
+            cooldowns: ref.read(creatureRepositoryProvider).getAllCooldowns(creature.id),
+          ),
+
           // Action buttons
           _ActionsCard(
             creature: creature,
+            cooldowns: ref.read(creatureRepositoryProvider).getAllCooldowns(creature.id),
             onFeed: () => _showFeedDialog(context, ref, creature),
             onPlay: () => _performAction(context, ref, creature, 'play'),
             onSleep: () => _performAction(context, ref, creature, creature.isSleeping ? 'wake' : 'sleep'),
             onClean: () => _performAction(context, ref, creature, 'clean'),
             onTrain: () => _showTrainDialog(context, ref, creature),
+            onMedicine: () => _showMedicineDialog(context, ref, creature),
           ),
           const SizedBox(height: 16),
 
@@ -203,12 +213,53 @@ class HomeScreen extends ConsumerWidget {
         creature: creature,
         onTrain: (statType) async {
           Navigator.pop(context);
-          await ref.read(creatureRepositoryProvider).trainCreature(creature.id, statType);
-          ref.read(creatureListProvider(_userId).notifier).loadCreatures();
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('${creature.name} hat trainiert!')),
-            );
+          try {
+            await ref.read(creatureRepositoryProvider).trainCreature(creature.id, statType);
+            ref.read(creatureListProvider(_userId).notifier).loadCreatures();
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('${creature.name} hat trainiert!')),
+              );
+            }
+          } on CooldownException catch (e) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(e.toString())),
+              );
+            }
+          }
+        },
+      ),
+    );
+  }
+
+  void _showMedicineDialog(BuildContext context, WidgetRef ref, Creature creature) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => _MedicineDialog(
+        userId: creature.userId,
+        onGiveMedicine: (itemId) async {
+          Navigator.pop(context);
+          try {
+            await ref.read(creatureRepositoryProvider).giveMedicine(creature.id, itemId);
+            ref.read(creatureListProvider(_userId).notifier).loadCreatures();
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('${creature.name} fühlt sich besser!')),
+              );
+            }
+          } on CooldownException catch (e) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(e.toString())),
+              );
+            }
+          } catch (e) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Fehler: $e')),
+              );
+            }
           }
         },
       ),
@@ -537,19 +588,23 @@ class _StatBar extends StatelessWidget {
 
 class _ActionsCard extends StatelessWidget {
   final Creature creature;
+  final Map<ActionType, Duration?> cooldowns;
   final VoidCallback onFeed;
   final VoidCallback onPlay;
   final VoidCallback onSleep;
   final VoidCallback onClean;
   final VoidCallback onTrain;
+  final VoidCallback onMedicine;
 
   const _ActionsCard({
     required this.creature,
+    required this.cooldowns,
     required this.onFeed,
     required this.onPlay,
     required this.onSleep,
     required this.onClean,
     required this.onTrain,
+    required this.onMedicine,
   });
 
   @override
@@ -575,17 +630,23 @@ class _ActionsCard extends StatelessWidget {
               runSpacing: 8,
               alignment: WrapAlignment.center,
               children: [
-                _ActionButton(
-                  icon: Icons.restaurant,
-                  label: 'Füttern',
-                  color: Colors.orange,
-                  onPressed: canInteract && !creature.isSleeping ? onFeed : null,
+                _buildActionWithCooldown(
+                  ActionType.feed,
+                  _ActionButton(
+                    icon: Icons.restaurant,
+                    label: 'Füttern',
+                    color: Colors.orange,
+                    onPressed: canInteract && !creature.isSleeping ? onFeed : null,
+                  ),
                 ),
-                _ActionButton(
-                  icon: Icons.sports_esports,
-                  label: 'Spielen',
-                  color: Colors.pink,
-                  onPressed: canInteract && !creature.isSleeping && creature.energy >= 10 ? onPlay : null,
+                _buildActionWithCooldown(
+                  ActionType.play,
+                  _ActionButton(
+                    icon: Icons.sports_esports,
+                    label: 'Spielen',
+                    color: Colors.pink,
+                    onPressed: canInteract && !creature.isSleeping && creature.energy >= 10 ? onPlay : null,
+                  ),
                 ),
                 _ActionButton(
                   icon: creature.isSleeping ? Icons.wb_sunny : Icons.bedtime,
@@ -593,24 +654,51 @@ class _ActionsCard extends StatelessWidget {
                   color: Colors.indigo,
                   onPressed: canInteract ? onSleep : null,
                 ),
-                _ActionButton(
-                  icon: Icons.shower,
-                  label: 'Waschen',
-                  color: Colors.blue,
-                  onPressed: canInteract && !creature.isSleeping ? onClean : null,
+                _buildActionWithCooldown(
+                  ActionType.clean,
+                  _ActionButton(
+                    icon: Icons.shower,
+                    label: 'Waschen',
+                    color: Colors.blue,
+                    onPressed: canInteract && !creature.isSleeping ? onClean : null,
+                  ),
                 ),
                 if (creature.canTrain)
-                  _ActionButton(
-                    icon: Icons.fitness_center,
-                    label: 'Trainieren',
-                    color: Colors.green,
-                    onPressed: creature.energy >= 20 ? onTrain : null,
+                  _buildActionWithCooldown(
+                    ActionType.train,
+                    _ActionButton(
+                      icon: Icons.fitness_center,
+                      label: 'Trainieren',
+                      color: Colors.green,
+                      onPressed: creature.energy >= 20 ? onTrain : null,
+                    ),
                   ),
+                _buildActionWithCooldown(
+                  ActionType.medicine,
+                  _ActionButton(
+                    icon: Icons.medical_services,
+                    label: 'Medizin',
+                    color: Colors.red,
+                    onPressed: canInteract && !creature.isSleeping ? onMedicine : null,
+                  ),
+                ),
               ],
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildActionWithCooldown(ActionType action, Widget child) {
+    final remaining = cooldowns[action];
+    if (remaining == null || remaining.inSeconds <= 0) {
+      return child;
+    }
+    return CooldownIndicator(
+      remainingTime: remaining,
+      action: action,
+      child: child,
     );
   }
 }
@@ -898,5 +986,117 @@ class _TrainDialog extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class _CooldownDisplay extends StatelessWidget {
+  final Map<ActionType, Duration?> cooldowns;
+
+  const _CooldownDisplay({required this.cooldowns});
+
+  @override
+  Widget build(BuildContext context) {
+    final activeCooldowns = cooldowns.entries
+        .where((e) => e.value != null && e.value!.inSeconds > 0)
+        .toList();
+
+    if (activeCooldowns.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: CooldownStatusRow(cooldowns: cooldowns),
+    );
+  }
+}
+
+class _MedicineDialog extends StatelessWidget {
+  final String userId;
+  final void Function(String itemId) onGiveMedicine;
+
+  const _MedicineDialog({
+    required this.userId,
+    required this.onGiveMedicine,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final medicineItems = ItemCatalog.getByCategory(ItemCategory.medicine);
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.medical_services, color: Colors.red),
+              const SizedBox(width: 8),
+              Text(
+                'Medizin geben',
+                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Wähle eine Medizin aus deinem Inventar:',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 16),
+          ...medicineItems.map((item) => ListTile(
+            leading: CircleAvatar(
+              backgroundColor: _getMedicineColor(item.id),
+              child: const Icon(Icons.healing, color: Colors.white),
+            ),
+            title: Text(item.name),
+            subtitle: Text(_getMedicineEffectText(item)),
+            trailing: Text(
+              '${item.priceSatoshis} sats',
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.primary,
+              ),
+            ),
+            onTap: () => onGiveMedicine(item.id),
+          )),
+          const SizedBox(height: 8),
+          Text(
+            'Hinweis: Du brauchst die Medizin im Inventar.',
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontStyle: FontStyle.italic,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Color _getMedicineColor(String id) {
+    switch (id) {
+      case 'medicine_basic':
+        return Colors.green;
+      case 'medicine_advanced':
+        return Colors.blue;
+      case 'medicine_cure_all':
+        return Colors.purple;
+      case 'medicine_energy':
+        return Colors.amber;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  String _getMedicineEffectText(Item item) {
+    final effects = <String>[];
+    if (item.healthEffect > 0) effects.add('+${item.healthEffect} Gesundheit');
+    if (item.happinessEffect > 0) effects.add('+${item.happinessEffect} Glück');
+    if (item.energyEffect > 0) effects.add('+${item.energyEffect} Energie');
+    return effects.join(', ');
   }
 }
