@@ -75,7 +75,7 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 - [x] **Sauberkeit** (0–100) – sinkt über Zeit, steigt durch Waschen/Putzen
 - [x] **Alter** – wächst in Echtzeit (Tage seit Erstellung)
 - [x] **Gewicht** – beeinflusst durch Fütterungsverhalten
-- [ ] Statuswerte sinken serverseitig (auch wenn App geschlossen)
+- [x] Statuswerte sinken serverseitig (auch wenn App geschlossen)
 - [x] **Tod-Mechanik (differenziert):**
   - **Vernachlässigung** (Hunger/Gesundheit = 0 über 7 Tage) → **permanenter Tod** (Kreatur ist unwiederbringlich verloren)
   - **Arena-Niederlage** → kein Tod, nur Kampf-HP-Verlust
@@ -89,9 +89,9 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 - [x] **Spielen** – Mini-Interaktionen, erhöht Glück, senkt Energie
 - [x] **Schlafen legen** – regeneriert Energie über Zeit
 - [x] **Waschen / Putzen** – erhöht Sauberkeit
-- [ ] **Medizin geben** – stellt Gesundheit wieder her (bei Krankheit)
+- [x] **Medizin geben** – stellt Gesundheit wieder her (bei Krankheit)
 - [x] **Trainieren** – erhöht Kampfwerte, senkt Energie stark
-- [ ] Cooldowns für Aktionen (z.B. Füttern max. alle 30 Min.)
+- [x] Cooldowns für Aktionen (z.B. Füttern max. alle 30 Min.)
 
 ### 3.4 Entwicklungsstufen
 - [x] **Ei** (Tag 0) – Schlüpf-Animation
