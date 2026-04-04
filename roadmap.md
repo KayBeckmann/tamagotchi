@@ -68,29 +68,29 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 - [x] Aktive Kreatur auswählen
 
 ### 3.2 Statuswerte & Bedürfnisse
-- [ ] **Hunger** (0–100) – sinkt über Zeit, steigt durch Füttern
-- [ ] **Glück** (0–100) – sinkt über Zeit, steigt durch Spielen
-- [ ] **Energie** (0–100) – sinkt durch Aktivitäten, regeneriert durch Schlafen
-- [ ] **Gesundheit** (0–100) – sinkt bei Vernachlässigung, steigt durch Pflege/Medizin
-- [ ] **Sauberkeit** (0–100) – sinkt über Zeit, steigt durch Waschen/Putzen
-- [ ] **Alter** – wächst in Echtzeit (Tage seit Erstellung)
-- [ ] **Gewicht** – beeinflusst durch Fütterungsverhalten
+- [x] **Hunger** (0–100) – sinkt über Zeit, steigt durch Füttern
+- [x] **Glück** (0–100) – sinkt über Zeit, steigt durch Spielen
+- [x] **Energie** (0–100) – sinkt durch Aktivitäten, regeneriert durch Schlafen
+- [x] **Gesundheit** (0–100) – sinkt bei Vernachlässigung, steigt durch Pflege/Medizin
+- [x] **Sauberkeit** (0–100) – sinkt über Zeit, steigt durch Waschen/Putzen
+- [x] **Alter** – wächst in Echtzeit (Tage seit Erstellung)
+- [x] **Gewicht** – beeinflusst durch Fütterungsverhalten
 - [ ] Statuswerte sinken serverseitig (auch wenn App geschlossen)
-- [ ] **Tod-Mechanik (differenziert):**
+- [x] **Tod-Mechanik (differenziert):**
   - **Vernachlässigung** (Hunger/Gesundheit = 0 über 7 Tage) → **permanenter Tod** (Kreatur ist unwiederbringlich verloren)
   - **Arena-Niederlage** → kein Tod, nur Kampf-HP-Verlust
   - **Turnier-Niederlage** → Kreatur ist **betäubt** und erholt sich nach einer Wartezeit (z.B. 2–6 Stunden)
 
 ### 3.3 Interaktionen
-- [ ] **Füttern** – verschiedene Nahrungsmittel mit unterschiedlichen Effekten
+- [x] **Füttern** – verschiedene Nahrungsmittel mit unterschiedlichen Effekten
   - Normales Futter: +10 Hunger, +2 Gewicht
   - Premium-Futter: +20 Hunger, +5 Glück, +1 Gewicht
   - Snack: +5 Hunger, +10 Glück, +5 Gewicht
-- [ ] **Spielen** – Mini-Interaktionen, erhöht Glück, senkt Energie
-- [ ] **Schlafen legen** – regeneriert Energie über Zeit
-- [ ] **Waschen / Putzen** – erhöht Sauberkeit
+- [x] **Spielen** – Mini-Interaktionen, erhöht Glück, senkt Energie
+- [x] **Schlafen legen** – regeneriert Energie über Zeit
+- [x] **Waschen / Putzen** – erhöht Sauberkeit
 - [ ] **Medizin geben** – stellt Gesundheit wieder her (bei Krankheit)
-- [ ] **Trainieren** – erhöht Kampfwerte, senkt Energie stark
+- [x] **Trainieren** – erhöht Kampfwerte, senkt Energie stark
 - [ ] Cooldowns für Aktionen (z.B. Füttern max. alle 30 Min.)
 
 ### 3.4 Entwicklungsstufen
