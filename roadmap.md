@@ -47,11 +47,11 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 - [x] Rate Limiting für Auth-Endpoints
 
 ### 2.2 Frontend – Auth-UI
-- [ ] Responsive Login-Screen
-- [ ] Responsive Registrierungs-Screen
-- [ ] Passwort-vergessen-Flow
-- [ ] Session-Management im Client (Secure Storage)
-- [ ] Automatischer Token-Refresh
+- [x] Responsive Login-Screen
+- [x] Responsive Registrierungs-Screen
+- [x] Passwort-vergessen-Flow
+- [x] Session-Management im Client (Secure Storage)
+- [x] Automatischer Token-Refresh
 - [ ] Offline-Erkennung und Hinweis
 
 ---
