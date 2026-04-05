@@ -120,11 +120,11 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 - [ ] Tägliche Login-Belohnungen (in Satoshis)
 
 ### 4.3 Profil & Einstellungen
-- [ ] Benutzerprofil (Name, Avatar, Statistiken)
-- [ ] Kreatur-Übersicht (alle eigenen Kreaturen)
+- [x] Benutzerprofil (Name, Avatar, Statistiken)
+- [x] Kreatur-Übersicht (alle eigenen Kreaturen)
 - [ ] Errungenschaften / Achievements
-- [ ] Einstellungen (Benachrichtigungen, Sprache, Theme)
-- [ ] Dark Mode / Light Mode
+- [x] Einstellungen (Benachrichtigungen, Sprache, Theme)
+- [x] Dark Mode / Light Mode
 
 ### 4.4 Responsives Design
 - [ ] Mobile-Layout (Hochformat, Touch-optimiert)

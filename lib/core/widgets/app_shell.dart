@@ -43,12 +43,37 @@ class AppShell extends StatelessWidget {
               selectedIndex: index,
               onDestinationSelected: (i) => _onTap(context, i),
               labelType: NavigationRailLabelType.all,
-              leading: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: IconButton(
-                  icon: const Icon(Icons.account_balance_wallet),
-                  tooltip: 'Wallet',
-                  onPressed: () => context.go('/wallet'),
+              leading: Column(
+                children: [
+                  const SizedBox(height: 8),
+                  IconButton(
+                    icon: const Icon(Icons.account_balance_wallet),
+                    tooltip: 'Wallet',
+                    onPressed: () => context.go('/wallet'),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.inventory_2),
+                    tooltip: 'Inventar',
+                    onPressed: () => context.go('/inventory'),
+                  ),
+                ],
+              ),
+              trailing: Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.person),
+                      tooltip: 'Profil',
+                      onPressed: () => context.go('/profile'),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.settings),
+                      tooltip: 'Einstellungen',
+                      onPressed: () => context.go('/settings'),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
                 ),
               ),
               destinations: railDestinations,

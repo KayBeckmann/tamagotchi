@@ -14,6 +14,8 @@ import '../../features/shop/presentation/screens/shop_screen.dart';
 import '../../features/inventory/presentation/screens/inventory_screen.dart';
 import '../../features/social/presentation/screens/social_screen.dart';
 import '../../features/wallet/presentation/screens/wallet_screen.dart';
+import '../../features/profile/presentation/screens/profile_screen.dart';
+import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../widgets/app_shell.dart';
 
 /// Routes that don't require authentication.
@@ -107,6 +109,16 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/wallet',
             name: 'wallet',
             builder: (context, state) => const WalletScreen(),
+          ),
+          GoRoute(
+            path: '/profile',
+            name: 'profile',
+            builder: (context, state) => const ProfileScreen(),
+          ),
+          GoRoute(
+            path: '/settings',
+            name: 'settings',
+            builder: (context, state) => const SettingsScreen(),
           ),
         ],
       ),

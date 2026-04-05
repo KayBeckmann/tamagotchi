@@ -27,15 +27,19 @@ class HomeScreen extends ConsumerWidget {
         title: const Text('Mein Tamagotchi'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.inventory_2_outlined),
+            tooltip: 'Inventar',
+            onPressed: () => context.push('/inventory'),
+          ),
+          IconButton(
             icon: const Icon(Icons.swap_horiz),
             tooltip: 'Kreatur wechseln',
             onPressed: () => _showCreatureSwitcher(context, ref),
           ),
           IconButton(
-            icon: const Icon(Icons.settings_outlined),
-            onPressed: () {
-              // TODO: Settings
-            },
+            icon: const Icon(Icons.person_outline),
+            tooltip: 'Profil',
+            onPressed: () => context.push('/profile'),
           ),
         ],
       ),
