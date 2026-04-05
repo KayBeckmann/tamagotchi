@@ -28,9 +28,10 @@ COPY --from=build /app/web/ web/
 COPY --from=build /app/migrations/ migrations/
 
 # Create passwords file for Docker environment
+# serviceSecret must be at least 32 characters for Insights to work
 RUN echo "database: changeme_dev_only" > config/passwords.yaml && \
     echo "redis: changeme_dev_only" >> config/passwords.yaml && \
-    echo "serviceSecret: docker_service_secret" >> config/passwords.yaml
+    echo "serviceSecret: docker_service_secret_key_min_32_chars" >> config/passwords.yaml
 
 # This file is required to enable the endpoint log filter in Insights.
 COPY --from=build /app/lib/src/generated/protocol.yaml lib/src/generated/protocol.yaml
@@ -40,5 +41,5 @@ EXPOSE 8080
 EXPOSE 8081
 EXPOSE 8082
 
-# Define the entrypoint command
-ENTRYPOINT ./server --mode=$runmode --server-id=$serverid --logging=$logging --role=$role
+# Define the entrypoint command with migrations
+ENTRYPOINT ./server --mode=$runmode --server-id=$serverid --logging=$logging --role=$role --apply-migrations
