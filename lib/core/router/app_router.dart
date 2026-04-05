@@ -26,6 +26,11 @@ final routerProvider = Provider<GoRouter>((ref) {
     initialLocation: '/login',
     refreshListenable: GoRouterRefreshStream(ref, authProvider),
     redirect: (context, state) {
+      // Still loading auth state - stay on current page
+      if (authState is AuthInitial || authState is AuthLoading) {
+        return null;
+      }
+
       final isAuthenticated = authState is AuthAuthenticated;
       final isPublicRoute = _publicRoutes.contains(state.matchedLocation);
 

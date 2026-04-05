@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Repository for authentication operations.
 ///
@@ -10,6 +12,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 /// - Session management
 class AuthRepository {
   final FlutterSecureStorage _secureStorage;
+  SharedPreferences? _prefs;
 
   static const _accessTokenKey = 'access_token';
   static const _refreshTokenKey = 'refresh_token';
@@ -17,6 +20,38 @@ class AuthRepository {
 
   AuthRepository({FlutterSecureStorage? secureStorage})
       : _secureStorage = secureStorage ?? const FlutterSecureStorage();
+
+  Future<SharedPreferences> get _sharedPrefs async {
+    _prefs ??= await SharedPreferences.getInstance();
+    return _prefs!;
+  }
+
+  // Use SharedPreferences for web, FlutterSecureStorage for mobile
+  Future<String?> _read(String key) async {
+    if (kIsWeb) {
+      final prefs = await _sharedPrefs;
+      return prefs.getString(key);
+    }
+    return _secureStorage.read(key: key);
+  }
+
+  Future<void> _write(String key, String value) async {
+    if (kIsWeb) {
+      final prefs = await _sharedPrefs;
+      await prefs.setString(key, value);
+    } else {
+      await _secureStorage.write(key: key, value: value);
+    }
+  }
+
+  Future<void> _delete(String key) async {
+    if (kIsWeb) {
+      final prefs = await _sharedPrefs;
+      await prefs.remove(key);
+    } else {
+      await _secureStorage.delete(key: key);
+    }
+  }
 
   /// Login with email and password.
   Future<AuthResult> login({
@@ -85,9 +120,9 @@ class AuthRepository {
 
   /// Logout and clear stored tokens.
   Future<void> logout() async {
-    await _secureStorage.delete(key: _accessTokenKey);
-    await _secureStorage.delete(key: _refreshTokenKey);
-    await _secureStorage.delete(key: _userIdKey);
+    await _delete(_accessTokenKey);
+    await _delete(_refreshTokenKey);
+    await _delete(_userIdKey);
   }
 
   /// Request password reset email.
@@ -99,13 +134,18 @@ class AuthRepository {
 
   /// Check if user is authenticated.
   Future<bool> isAuthenticated() async {
-    final token = await _secureStorage.read(key: _accessTokenKey);
-    return token != null;
+    try {
+      final token = await _read(_accessTokenKey);
+      return token != null;
+    } catch (e) {
+      // On web, storage might fail initially
+      return false;
+    }
   }
 
   /// Get stored access token.
   Future<String?> getAccessToken() async {
-    return _secureStorage.read(key: _accessTokenKey);
+    return _read(_accessTokenKey);
   }
 
   /// Store authentication tokens.
@@ -114,9 +154,9 @@ class AuthRepository {
     required String refreshToken,
     required int userId,
   }) async {
-    await _secureStorage.write(key: _accessTokenKey, value: accessToken);
-    await _secureStorage.write(key: _refreshTokenKey, value: refreshToken);
-    await _secureStorage.write(key: _userIdKey, value: userId.toString());
+    await _write(_accessTokenKey, accessToken);
+    await _write(_refreshTokenKey, refreshToken);
+    await _write(_userIdKey, userId.toString());
   }
 }
 
