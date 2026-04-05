@@ -114,8 +114,8 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 - [x] Benachrichtigungen bei kritischen Statuswerten
 
 ### 4.2 Inventar & Shop
-- [ ] Inventar-Ansicht (Futter, Medizin, Spielzeug)
-- [ ] Shop zum Erwerb von Gegenständen – **Bezahlung in Satoshis (BTC)**
+- [x] Inventar-Ansicht (Futter, Medizin, Spielzeug)
+- [x] Shop zum Erwerb von Gegenständen – **Bezahlung in Satoshis (BTC)**
 - [ ] Satoshis verdienen durch Pflege, Kämpfe, Turniere
 - [ ] Tägliche Login-Belohnungen (in Satoshis)
 
