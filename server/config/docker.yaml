@@ -1,0 +1,42 @@
+# Docker environment configuration - no SSL required for local containers
+
+# Configuration for the main API server.
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+
+# Configuration for the Insights server.
+insightsServer:
+  port: 8081
+  publicHost: localhost
+  publicPort: 8081
+  publicScheme: http
+
+# Configuration for the web server.
+webServer:
+  port: 8082
+  publicHost: localhost
+  publicPort: 8082
+  publicScheme: http
+
+# Database setup for Docker - no SSL
+database:
+  host: postgres
+  port: 5432
+  name: tamagotchi_server
+  user: postgres
+  requireSsl: false
+
+# Redis setup for Docker
+redis:
+  enabled: true
+  host: redis
+  port: 6379
+  requireSsl: false
+
+maxRequestSize: 524288
+
+sessionLogs:
+  consoleEnabled: true

@@ -27,6 +27,11 @@ COPY --from=build /app/config/ config/
 COPY --from=build /app/web/ web/
 COPY --from=build /app/migrations/ migrations/
 
+# Create passwords file for Docker environment
+RUN echo "database: changeme_dev_only" > config/passwords.yaml && \
+    echo "redis: changeme_dev_only" >> config/passwords.yaml && \
+    echo "serviceSecret: docker_service_secret" >> config/passwords.yaml
+
 # This file is required to enable the endpoint log filter in Insights.
 COPY --from=build /app/lib/src/generated/protocol.yaml lib/src/generated/protocol.yaml
 
