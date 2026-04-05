@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/utils/time_of_day_helper.dart';
 import '../../domain/models/creature.dart';
 import '../../domain/models/creature_type.dart';
 import '../../domain/models/action_cooldown.dart';
@@ -317,29 +318,61 @@ class _CreatureDisplayCard extends StatelessWidget {
     final categoryColor = creature.type.category == CreatureCategory.animal
         ? Colors.green
         : Colors.purple;
+    final dayPeriod = TimeOfDayHelper.getCurrentPeriod();
+    final backgroundColors = TimeOfDayHelper.getBackgroundGradient(dayPeriod);
+    final isDark = TimeOfDayHelper.isDark(dayPeriod);
+    final textColor = isDark ? Colors.white : Colors.black87;
 
     return Card(
       clipBehavior: Clip.antiAlias,
       child: Container(
         width: double.infinity,
-        height: 220,
+        height: 240,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              categoryColor.withValues(alpha: 0.2),
-              theme.colorScheme.surface,
-            ],
+            colors: backgroundColors,
           ),
         ),
         child: Stack(
           children: [
+            // Time indicator
+            Positioned(
+              top: 8,
+              right: 8,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      TimeOfDayHelper.getTimeIcon(dayPeriod),
+                      size: 16,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      TimeOfDayHelper.getGreeting(dayPeriod),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
             // Sleeping overlay
             if (creature.isSleeping)
               Positioned.fill(
                 child: Container(
-                  color: Colors.black.withValues(alpha: 0.3),
+                  color: Colors.black.withValues(alpha: 0.4),
                   child: const Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -363,13 +396,17 @@ class _CreatureDisplayCard extends StatelessWidget {
                     width: 100,
                     height: 100,
                     decoration: BoxDecoration(
-                      color: categoryColor.withValues(alpha: 0.2),
+                      color: (isDark ? Colors.white : categoryColor).withValues(alpha: 0.2),
                       shape: BoxShape.circle,
+                      border: Border.all(
+                        color: (isDark ? Colors.white : categoryColor).withValues(alpha: 0.3),
+                        width: 2,
+                      ),
                     ),
                     child: Icon(
                       _getCreatureIcon(creature.type.id),
                       size: 60,
-                      color: categoryColor,
+                      color: isDark ? Colors.white : categoryColor,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -377,6 +414,7 @@ class _CreatureDisplayCard extends StatelessWidget {
                     creature.name,
                     style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
+                      color: textColor,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -387,19 +425,24 @@ class _CreatureDisplayCard extends StatelessWidget {
                         label: Text(creature.stage.displayName),
                         avatar: const Icon(Icons.trending_up, size: 16),
                         visualDensity: VisualDensity.compact,
+                        backgroundColor: Colors.black.withValues(alpha: 0.2),
+                        labelStyle: TextStyle(color: textColor),
                       ),
                       const SizedBox(width: 8),
                       Chip(
                         label: Text('Tag ${creature.ageInDays}'),
                         avatar: const Icon(Icons.calendar_today, size: 16),
                         visualDensity: VisualDensity.compact,
+                        backgroundColor: Colors.black.withValues(alpha: 0.2),
+                        labelStyle: TextStyle(color: textColor),
                       ),
                     ],
                   ),
                   Text(
                     _getMoodText(creature.mood),
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: _getMoodColor(creature.mood),
+                      color: isDark ? Colors.white70 : _getMoodColor(creature.mood),
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ],

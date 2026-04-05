@@ -107,11 +107,11 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 
 ### 4.1 Hauptscreen (Tamagotchi-Ansicht)
 - [ ] Kreatur-Animation (animiertes Sprite, zentral)
-- [ ] Statusleisten (Hunger, Glück, Energie, Gesundheit, Sauberkeit)
-- [ ] Aktionsbuttons (Füttern, Spielen, Schlafen, Waschen, Trainieren)
-- [ ] Hintergrund wechselt je nach Tageszeit (Tag/Nacht-Zyklus)
+- [x] Statusleisten (Hunger, Glück, Energie, Gesundheit, Sauberkeit)
+- [x] Aktionsbuttons (Füttern, Spielen, Schlafen, Waschen, Trainieren)
+- [x] Hintergrund wechselt je nach Tageszeit (Tag/Nacht-Zyklus)
 - [ ] Wetter-Effekte (optional, rein kosmetisch)
-- [ ] Benachrichtigungen bei kritischen Statuswerten
+- [x] Benachrichtigungen bei kritischen Statuswerten
 
 ### 4.2 Inventar & Shop
 - [ ] Inventar-Ansicht (Futter, Medizin, Spielzeug)
