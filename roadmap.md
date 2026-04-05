@@ -127,11 +127,11 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 - [x] Dark Mode / Light Mode
 
 ### 4.4 Responsives Design
-- [ ] Mobile-Layout (Hochformat, Touch-optimiert)
-- [ ] Tablet-Layout (geteilte Ansicht)
-- [ ] Desktop-Layout (Sidebar-Navigation, größere Kreatur-Ansicht)
-- [ ] Web-Layout (Desktop-ähnlich, Tastatursteuerung)
-- [ ] Adaptive Breakpoints: 600px (Mobil), 900px (Tablet), 1200px (Desktop)
+- [x] Mobile-Layout (Hochformat, Touch-optimiert)
+- [x] Tablet-Layout (geteilte Ansicht)
+- [x] Desktop-Layout (Sidebar-Navigation, größere Kreatur-Ansicht)
+- [x] Web-Layout (Desktop-ähnlich, Tastatursteuerung)
+- [x] Adaptive Breakpoints: 600px (Mobil), 900px (Tablet), 1200px (Desktop)
 
 ---
 

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/utils/time_of_day_helper.dart';
+import '../../../../core/utils/responsive_layout.dart';
 import '../../domain/models/creature.dart';
 import '../../domain/models/creature_type.dart';
 import '../../domain/models/action_cooldown.dart';
@@ -19,7 +20,6 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
     final creatureState = ref.watch(creatureListProvider(_userId));
 
     return Scaffold(
@@ -116,8 +116,63 @@ class HomeScreen extends ConsumerWidget {
   }
 
   Widget _buildCreatureView(BuildContext context, WidgetRef ref, Creature creature) {
-    final theme = Theme.of(context);
+    final isWide = context.isWide;
+    final cooldowns = ref.read(creatureRepositoryProvider).getAllCooldowns(creature.id);
 
+    if (isWide) {
+      // Tablet/Desktop: Two-column layout
+      return SingleChildScrollView(
+        padding: EdgeInsets.all(context.horizontalPadding),
+        child: ConstrainedContent(
+          maxWidth: 1200,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Left column: Creature display and battle stats
+              Expanded(
+                flex: 5,
+                child: Column(
+                  children: [
+                    _CreatureDisplayCard(creature: creature),
+                    if (creature.stage == DevelopmentStage.teen ||
+                        creature.stage == DevelopmentStage.adult) ...[
+                      const SizedBox(height: 16),
+                      _BattleStatsCard(creature: creature),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(width: 24),
+              // Right column: Status, cooldowns, and actions
+              Expanded(
+                flex: 4,
+                child: Column(
+                  children: [
+                    if (creature.hasCriticalStat)
+                      _CriticalStatBanner(creature: creature),
+                    _StatusCard(creature: creature),
+                    const SizedBox(height: 16),
+                    _CooldownDisplay(cooldowns: cooldowns),
+                    _ActionsCard(
+                      creature: creature,
+                      cooldowns: cooldowns,
+                      onFeed: () => _showFeedDialog(context, ref, creature),
+                      onPlay: () => _performAction(context, ref, creature, 'play'),
+                      onSleep: () => _performAction(context, ref, creature, creature.isSleeping ? 'wake' : 'sleep'),
+                      onClean: () => _performAction(context, ref, creature, 'clean'),
+                      onTrain: () => _showTrainDialog(context, ref, creature),
+                      onMedicine: () => _showMedicineDialog(context, ref, creature),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Mobile: Single-column layout
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -135,14 +190,12 @@ class HomeScreen extends ConsumerWidget {
           const SizedBox(height: 16),
 
           // Cooldown display
-          _CooldownDisplay(
-            cooldowns: ref.read(creatureRepositoryProvider).getAllCooldowns(creature.id),
-          ),
+          _CooldownDisplay(cooldowns: cooldowns),
 
           // Action buttons
           _ActionsCard(
             creature: creature,
-            cooldowns: ref.read(creatureRepositoryProvider).getAllCooldowns(creature.id),
+            cooldowns: cooldowns,
             onFeed: () => _showFeedDialog(context, ref, creature),
             onPlay: () => _performAction(context, ref, creature, 'play'),
             onSleep: () => _performAction(context, ref, creature, creature.isSleeping ? 'wake' : 'sleep'),

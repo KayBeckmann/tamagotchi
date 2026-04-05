@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/utils/responsive_layout.dart';
 import '../../../creature/domain/models/item.dart';
 import '../../../creature/data/creature_repository.dart';
 
@@ -108,13 +109,38 @@ class _InventoryTab extends StatelessWidget {
       );
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: filteredItems.length,
-      itemBuilder: (context, index) {
-        final inventoryItem = filteredItems[index];
-        return _InventoryItemCard(inventoryItem: inventoryItem);
-      },
+    final columns = context.gridColumns;
+    final padding = context.horizontalPadding;
+
+    if (columns == 1) {
+      // Mobile: Simple list
+      return ListView.builder(
+        padding: EdgeInsets.all(padding),
+        itemCount: filteredItems.length,
+        itemBuilder: (context, index) {
+          final inventoryItem = filteredItems[index];
+          return _InventoryItemCard(inventoryItem: inventoryItem);
+        },
+      );
+    }
+
+    // Tablet/Desktop: Grid layout
+    return ConstrainedContent(
+      maxWidth: 1200,
+      padding: EdgeInsets.all(padding),
+      child: GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: columns,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+          childAspectRatio: 2.5,
+        ),
+        itemCount: filteredItems.length,
+        itemBuilder: (context, index) {
+          final inventoryItem = filteredItems[index];
+          return _InventoryItemCard(inventoryItem: inventoryItem);
+        },
+      ),
     );
   }
 }
