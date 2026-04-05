@@ -11,6 +11,7 @@ import '../../features/creature/presentation/screens/creature_selection_screen.d
 import '../../features/arena/presentation/screens/arena_screen.dart';
 import '../../features/tournament/presentation/screens/tournament_screen.dart';
 import '../../features/shop/presentation/screens/shop_screen.dart';
+import '../../features/inventory/presentation/screens/inventory_screen.dart';
 import '../../features/social/presentation/screens/social_screen.dart';
 import '../../features/wallet/presentation/screens/wallet_screen.dart';
 import '../widgets/app_shell.dart';
@@ -86,6 +87,11 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/shop',
             name: 'shop',
             builder: (context, state) => const ShopScreen(),
+          ),
+          GoRoute(
+            path: '/inventory',
+            name: 'inventory',
+            builder: (context, state) => const InventoryScreen(),
           ),
           GoRoute(
             path: '/social',
