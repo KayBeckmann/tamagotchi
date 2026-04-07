@@ -1,0 +1,37 @@
+### A tournament where creatures battle for Bitcoin prizes.
+class: Tournament
+table: tournaments
+
+fields:
+  ### Tournament name.
+  name: String
+  ### Tournament format: single_elimination, double_elimination, round_robin.
+  format: String
+  ### Maximum number of participants.
+  maxParticipants: int
+  ### Current number of registered participants.
+  currentParticipants: int
+  ### Entry fee in Satoshis.
+  entryFeeSat: int
+  ### Total prize pool in Satoshis.
+  prizePoolSat: int
+  ### Platform fee percentage (0.0 - 1.0).
+  feePercent: double
+  ### Status: registration, active, completed, cancelled.
+  status: String
+  ### ID of the winning user.
+  winnerUserId: int?
+  ### Time window per round in minutes.
+  roundTimeMinutes: int
+  ### Current round number.
+  currentRound: int
+  ### Registration deadline.
+  registrationEndsAt: DateTime
+  ### Tournament start time.
+  startsAt: DateTime
+  ### Tournament creation time.
+  createdAt: DateTime
+
+indexes:
+  tournament_status_idx:
+    fields: status

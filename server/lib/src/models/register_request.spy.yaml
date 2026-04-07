@@ -1,0 +1,10 @@
+### Request body for user registration.
+class: RegisterRequest
+
+fields:
+  ### Desired username.
+  username: String
+  ### Email address.
+  email: String
+  ### Plain-text password (will be hashed server-side).
+  password: String

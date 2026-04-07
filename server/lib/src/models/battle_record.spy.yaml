@@ -1,0 +1,37 @@
+### Record of a battle between two creatures.
+class: BattleRecord
+table: battle_records
+
+fields:
+  ### The attacking/initiating user.
+  attackerUserId: int, relation(parent=app_users)
+  ### The defending user.
+  defenderUserId: int
+  ### The attacking creature.
+  attackerCreatureId: int, relation(parent=creatures)
+  ### The defending creature.
+  defenderCreatureId: int
+  ### ID of the winning user (null for draw).
+  winnerUserId: int?
+  ### Type: 'arena' or 'tournament'.
+  battleType: String
+  ### Tournament ID if this was a tournament battle.
+  tournamentId: int?
+  ### Total rounds fought.
+  rounds: int
+  ### XP awarded to attacker.
+  attackerXpGained: int
+  ### XP awarded to defender.
+  defenderXpGained: int
+  ### Satoshis awarded to winner.
+  satoshisAwarded: int
+  ### JSON log of the battle.
+  battleLog: String?
+  ### Timestamp of the battle.
+  createdAt: DateTime
+
+indexes:
+  battle_attacker_idx:
+    fields: attackerUserId
+  battle_defender_idx:
+    fields: defenderUserId

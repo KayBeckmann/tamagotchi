@@ -1,2 +1,10 @@
+auth:
+  - register:
+  - login:
+  - refreshToken:
+  - logout:
+  - logoutAll:
+  - deleteAccount:
+  - getProfile:
 greeting:
   - hello:

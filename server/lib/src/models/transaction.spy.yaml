@@ -1,0 +1,27 @@
+### A Bitcoin transaction record.
+class: Transaction
+table: transactions
+
+fields:
+  ### Reference to the user.
+  userId: int, relation(parent=app_users)
+  ### Type: deposit, withdrawal, tournament_entry, tournament_prize, battle_reward, shop_purchase.
+  type: String
+  ### Amount in Satoshis (positive = credit, negative = debit).
+  amountSat: int
+  ### Description of the transaction.
+  description: String
+  ### Related entity ID (tournament ID, battle ID, etc.).
+  referenceId: int?
+  ### Lightning invoice or payment hash.
+  paymentHash: String?
+  ### Status: pending, completed, failed.
+  status: String
+  ### Timestamp of the transaction.
+  createdAt: DateTime
+
+indexes:
+  transaction_user_idx:
+    fields: userId
+  transaction_status_idx:
+    fields: status

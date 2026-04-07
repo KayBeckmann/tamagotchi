@@ -1,0 +1,12 @@
+### Response returned after successful login or token refresh.
+class: AuthResponse
+
+fields:
+  ### The authenticated user's data.
+  user: AppUser
+  ### JWT access token for API calls.
+  accessToken: String
+  ### Refresh token for obtaining new access tokens.
+  refreshToken: String
+  ### Access token expiration time.
+  expiresAt: DateTime

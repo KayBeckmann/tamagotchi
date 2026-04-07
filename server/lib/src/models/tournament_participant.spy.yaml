@@ -1,0 +1,30 @@
+### A user's participation in a tournament.
+class: TournamentParticipant
+table: tournament_participants
+
+fields:
+  ### Reference to the tournament.
+  tournamentId: int, relation(parent=tournaments)
+  ### Reference to the participating user.
+  userId: int, relation(parent=app_users)
+  ### Reference to the creature used in the tournament.
+  creatureId: int, relation(parent=creatures)
+  ### Seed/position in the bracket.
+  seed: int
+  ### Whether the participant has been eliminated.
+  isEliminated: bool
+  ### Final placement (1st, 2nd, etc.).
+  placement: int?
+  ### Satoshis won in this tournament.
+  satoshisWon: int
+  ### Timestamp of registration.
+  createdAt: DateTime
+
+indexes:
+  tp_tournament_idx:
+    fields: tournamentId
+  tp_user_idx:
+    fields: userId
+  tp_unique_idx:
+    fields: tournamentId, userId
+    unique: true

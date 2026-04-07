@@ -1,0 +1,22 @@
+### Stores refresh tokens for user sessions.
+class: AuthToken
+table: auth_tokens
+
+fields:
+  ### Reference to the user who owns this token.
+  userId: int, relation(parent=app_users)
+  ### The hashed refresh token string.
+  tokenHash: String
+  ### When the refresh token expires.
+  expiresAt: DateTime
+  ### Device or client identifier.
+  deviceInfo: String?
+  ### Timestamp when the token was created.
+  createdAt: DateTime
+
+indexes:
+  auth_token_user_idx:
+    fields: userId
+  auth_token_hash_idx:
+    fields: tokenHash
+    unique: true

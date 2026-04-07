@@ -1,0 +1,37 @@
+### A registered user of the Tamagotchi app.
+class: AppUser
+table: app_users
+
+fields:
+  ### Unique username chosen by the user.
+  username: String
+  ### Email address for login and notifications.
+  email: String
+  ### BCrypt-hashed password.
+  passwordHash: String
+  ### User experience points earned through battles and tournaments.
+  xp: int
+  ### User level calculated from XP.
+  level: int
+  ### ELO rating for arena matchmaking.
+  eloRating: int
+  ### Wallet balance in Satoshis.
+  walletBalanceSat: int
+  ### Total arena wins.
+  totalWins: int
+  ### Total arena losses.
+  totalLosses: int
+  ### Whether the account is active.
+  isActive: bool
+  ### Timestamp of account creation.
+  createdAt: DateTime
+  ### Timestamp of last login.
+  lastLoginAt: DateTime?
+
+indexes:
+  app_user_email_idx:
+    fields: email
+    unique: true
+  app_user_username_idx:
+    fields: username
+    unique: true

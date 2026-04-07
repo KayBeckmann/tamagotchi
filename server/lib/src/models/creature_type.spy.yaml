@@ -1,0 +1,30 @@
+### A type/species of creature that can be chosen by users.
+class: CreatureType
+table: creature_types
+
+fields:
+  ### Display name of the creature type.
+  name: String
+  ### Description of the creature type.
+  description: String
+  ### Category: 'animal' or 'monster'.
+  category: String
+  ### Element type (fire, water, earth, air, dark, light).
+  element: String
+  ### Base attack value.
+  baseAttack: int
+  ### Base defense value.
+  baseDefense: int
+  ### Base speed value.
+  baseSpeed: int
+  ### Base max HP for battles.
+  baseHp: int
+  ### Asset path for the sprite.
+  spritePath: String
+  ### Whether this creature type is available for selection.
+  isAvailable: bool
+
+indexes:
+  creature_type_name_idx:
+    fields: name
+    unique: true

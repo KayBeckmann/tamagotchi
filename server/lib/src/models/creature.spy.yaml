@@ -1,0 +1,57 @@
+### A creature owned by a user (their Tamagotchi).
+class: Creature
+table: creatures
+
+fields:
+  ### The user who owns this creature.
+  userId: int, relation(parent=app_users)
+  ### The type/species of this creature.
+  creatureTypeId: int, relation(parent=creature_types)
+  ### Name given by the user.
+  name: String
+  ### Current hunger level (0-100).
+  hunger: int
+  ### Current happiness level (0-100).
+  happiness: int
+  ### Current energy level (0-100).
+  energy: int
+  ### Current health level (0-100).
+  health: int
+  ### Current cleanliness level (0-100).
+  cleanliness: int
+  ### Current weight.
+  weight: double
+  ### Attack stat (base + training bonus).
+  attack: int
+  ### Defense stat (base + training bonus).
+  defense: int
+  ### Speed stat (base + training bonus).
+  speed: int
+  ### Max battle HP.
+  maxHp: int
+  ### Evolution stage: egg, baby, child, teen, adult.
+  evolutionStage: String
+  ### Whether this is the user's active creature.
+  isActive: bool
+  ### Whether the creature is alive.
+  isAlive: bool
+  ### Whether the creature is stunned (from tournament loss).
+  isStunned: bool
+  ### When stun wears off.
+  stunUntil: DateTime?
+  ### Timestamp when the creature was created (for age calculation).
+  createdAt: DateTime
+  ### Last time stats were decayed server-side.
+  lastStatUpdate: DateTime
+  ### Last time the creature was fed.
+  lastFedAt: DateTime?
+  ### Last time the creature was played with.
+  lastPlayedAt: DateTime?
+  ### Last time the creature was trained.
+  lastTrainedAt: DateTime?
+
+indexes:
+  creature_user_idx:
+    fields: userId
+  creature_active_idx:
+    fields: userId, isActive
