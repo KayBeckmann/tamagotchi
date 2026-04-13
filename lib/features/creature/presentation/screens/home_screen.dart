@@ -11,6 +11,7 @@ import '../../domain/models/item.dart';
 import '../../data/creature_repository.dart';
 import '../providers/creature_provider.dart';
 import '../widgets/cooldown_indicator.dart';
+import '../widgets/creature_sprite.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -448,21 +449,13 @@ class _CreatureDisplayCard extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Creature sprite placeholder
-                  Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: (isDark ? Colors.white : categoryColor).withValues(alpha: 0.2),
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: (isDark ? Colors.white : categoryColor).withValues(alpha: 0.3),
-                        width: 2,
-                      ),
-                    ),
-                    child: Icon(
-                      _getCreatureIcon(creature.type.id),
-                      size: 60,
+                  // Creature sprite animated
+                  SizedBox(
+                    width: 120,
+                    height: 120,
+                    child: CreatureSprite(
+                      creature: creature,
+                      size: 80,
                       color: isDark ? Colors.white : categoryColor,
                     ),
                   ),
@@ -509,24 +502,6 @@ class _CreatureDisplayCard extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  IconData _getCreatureIcon(String id) {
-    switch (id) {
-      case 'cat': return Icons.pets;
-      case 'dog': return Icons.pets;
-      case 'dragon': return Icons.local_fire_department;
-      case 'rabbit': return Icons.cruelty_free;
-      case 'fox': return Icons.pets;
-      case 'bird': return Icons.flutter_dash;
-      case 'slime': return Icons.bubble_chart;
-      case 'goblin': return Icons.face;
-      case 'ghost': return Icons.nights_stay;
-      case 'elemental': return Icons.auto_awesome;
-      case 'golem': return Icons.landscape;
-      case 'shadow_cat': return Icons.dark_mode;
-      default: return Icons.help_outline;
-    }
   }
 
   String _getMoodText(CreatureMood mood) {
