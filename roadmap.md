@@ -155,7 +155,7 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 
 ### 5.2 Matchmaking
 - [x] Matchmaking-Queue (sucht Gegner ähnlicher Stärke)
-- [ ] ELO-Rating-System für faires Matching
+- [ ] ELO-Rating-System for faires Matching
 - [x] Wartezeit-Anzeige
 - [ ] Kampf-Einladungen an Freunde (Freundesliste)
 - [x] Zufallsgegner-Suche
@@ -198,14 +198,14 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
   - Anmeldephase (mit Countdown)
   - Laufendes Turnier (Matches werden automatisch geplant)
   - Abgeschlossen (Ergebnisse & Auszahlung)
-- [ ] Bracket-Ansicht (Turnierbaum-Visualisierung)
+- [x] Bracket-Ansicht (Turnierbaum-Visualisierung)
 - [ ] Automatische Kampfplanung und Benachrichtigungen
 - [ ] Zeitfenster für Kämpfe (z.B. 24h pro Runde)
 - [ ] Automatischer Forfeit bei Nichtantreten
 
 ### 6.2 Turnier-UI
 - [x] Turnier-Übersicht (alle offenen/laufenden/vergangenen Turniere)
-- [ ] Turnier-Detailansicht mit Bracket
+- [x] Turnier-Detailansicht mit Bracket
 - [x] Anmeldeflow (inkl. Bitcoin-Zahlung, siehe Phase 7)
 - [ ] Live-Turnier-Status und Benachrichtigungen
 - [ ] Turnier-Ergebnishistorie

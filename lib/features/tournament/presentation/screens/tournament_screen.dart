@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../providers/tournament_provider.dart';
 import '../domain/models/tournament.dart';
@@ -88,113 +89,115 @@ class _TournamentCard extends ConsumerWidget {
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: _getStatusGradient(tournament.status, theme),
-              ),
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  _getStatusIcon(tournament.status),
-                  color: Colors.white,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => context.push('/tournament/${tournament.id}'),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: _getStatusGradient(tournament.status, theme),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        tournament.title,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    _getStatusIcon(tournament.status),
+                    color: Colors.white,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          tournament.title,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
+                        Text(
+                          _getStatusText(tournament.status),
+                          style: theme.textTheme.bodySmall?.copyWith(color: Colors.white70),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (isJoined)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      Text(
-                        _getStatusText(tournament.status),
-                        style: theme.textTheme.bodySmall?.copyWith(color: Colors.white70),
+                      child: const Text(
+                        'Angemeldet',
+                        style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(tournament.description),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _InfoItem(
+                        label: 'Eintritt',
+                        value: '${tournament.entryFeeSats} Sats',
+                        icon: Icons.toll,
+                      ),
+                      _InfoItem(
+                        label: 'Preispool',
+                        value: '${tournament.prizePoolSats} Sats',
+                        icon: Icons.emoji_events,
+                        iconColor: Colors.amber,
+                      ),
+                      _InfoItem(
+                        label: 'Teilnehmer',
+                        value: '${tournament.currentParticipants} / ${tournament.maxParticipants}',
+                        icon: Icons.people,
                       ),
                     ],
                   ),
-                ),
-                if (isJoined)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Text(
-                      'Angemeldet',
-                      style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(tournament.description),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _InfoItem(
-                      label: 'Eintritt',
-                      value: '${tournament.entryFeeSats} Sats',
-                      icon: Icons.toll,
-                    ),
-                    _InfoItem(
-                      label: 'Preispool',
-                      value: '${tournament.prizePoolSats} Sats',
-                      icon: Icons.emoji_events,
-                      iconColor: Colors.amber,
-                    ),
-                    _InfoItem(
-                      label: 'Teilnehmer',
-                      value: '${tournament.currentParticipants} / ${tournament.maxParticipants}',
-                      icon: Icons.people,
-                    ),
-                  ],
-                ),
-                const Divider(height: 32),
-                Row(
-                  children: [
-                    Icon(Icons.access_time, size: 16, color: theme.colorScheme.onSurfaceVariant),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Start: ${dateFormat.format(tournament.startTime)}',
-                      style: theme.textTheme.bodySmall,
-                    ),
-                    const Spacer(),
-                    if (tournament.status == TournamentStatus.registration)
-                      FilledButton(
-                        onPressed: isJoined ? null : () => _joinTournament(context, ref),
-                        child: Text(isJoined ? 'Warten auf Start' : 'Teilnehmen'),
-                      )
-                    else
-                      OutlinedButton(
-                        onPressed: () {
-                          // TODO: Navigate to detail/bracket
-                        },
-                        child: const Text('Details'),
+                  const Divider(height: 32),
+                  Row(
+                    children: [
+                      Icon(Icons.access_time, size: 16, color: theme.colorScheme.onSurfaceVariant),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Start: ${dateFormat.format(tournament.startTime)}',
+                        style: theme.textTheme.bodySmall,
                       ),
-                  ],
-                ),
-              ],
+                      const Spacer(),
+                      if (tournament.status == TournamentStatus.registration)
+                        FilledButton(
+                          onPressed: isJoined ? null : () => _joinTournament(context, ref),
+                          child: Text(isJoined ? 'Warten auf Start' : 'Teilnehmen'),
+                        )
+                      else
+                        OutlinedButton(
+                          onPressed: () => context.push('/tournament/${tournament.id}'),
+                          child: const Text('Details'),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
