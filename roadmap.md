@@ -266,18 +266,18 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 ## Phase 8: Soziale Features
 
 ### 8.1 Freundesliste
-- [ ] Freunde suchen (nach Username)
-- [ ] Freundschaftsanfragen senden/annehmen/ablehnen
+- [x] Freunde suchen (nach Username)
+- [x] Freundschaftsanfragen senden/annehmen/ablehnen (Simuliert)
 - [ ] Freunde-Kreaturen besuchen (nur anschauen)
 - [ ] Direkte Kampfeinladungen an Freunde
 
 ### 8.2 Chat & Kommunikation
 - [ ] Einfacher In-App-Chat (1:1 mit Freunden)
-- [ ] Turnier-Chat (für Turnier-Teilnehmer)
+- [ ] Turnier-Chat (for Turnier-Teilnehmer)
 - [ ] Chat-Moderation (Wortfilter, Meldefunktion)
 
 ### 8.3 Handelssystem
-- [ ] Gegenstände zwischen Spielern tauschen
+- [x] Gegenstände zwischen Spielern tauschen (Simuliert)
 - [ ] Kreaturen zwischen Spielern tauschen
 - [ ] Cooldowns und Limits gegen Missbrauch (z.B. max. 3 Trades pro Tag)
 - [ ] Handelshistorie und Bestätigungsflow
