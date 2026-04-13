@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../data/social_repository.dart';
 
 class SocialScreen extends StatelessWidget {
   const SocialScreen({super.key});
@@ -207,133 +209,125 @@ class _Friend {
 
 // --- Ranking Tab ---
 
-class _RankingTab extends StatelessWidget {
+class _RankingTab extends ConsumerWidget {
   const _RankingTab();
 
-  static const _rankings = [
-    _RankEntry(rank: 1, name: 'ProGamer99', level: 45, points: 98500),
-    _RankEntry(rank: 2, name: 'DragonMaster', level: 23, points: 72300),
-    _RankEntry(rank: 3, name: 'MegaFighter', level: 38, points: 65100),
-    _RankEntry(rank: 4, name: 'StarPlayer', level: 30, points: 54200),
-    _RankEntry(rank: 5, name: 'Spieler_42', level: 12, points: 43800),
-    _RankEntry(rank: 6, name: 'CryptoKnight', level: 15, points: 38900),
-    _RankEntry(rank: 7, name: 'Pixel_Queen', level: 8, points: 31200),
-  ];
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final rankingsState = ref.watch(rankingsProvider);
+    final playerRankState = ref.watch(playerRankProvider('user_1'));
 
     return Column(
       children: [
         // Player's own rank
-        Container(
-          width: double.infinity,
-          margin: const EdgeInsets.all(16),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                theme.colorScheme.primaryContainer,
-                theme.colorScheme.tertiaryContainer,
+        playerRankState.when(
+          data: (entry) => Container(
+            width: double.infinity,
+            margin: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  theme.colorScheme.primaryContainer,
+                  theme.colorScheme.tertiaryContainer,
+                ],
+              ),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              children: [
+                Text(
+                  '#${entry.rank}',
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Dein Rang',
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      Text(
+                        '${entry.points} Punkte',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.trending_up, color: Colors.green),
               ],
             ),
-            borderRadius: BorderRadius.circular(16),
           ),
-          child: Row(
-            children: [
-              Text(
-                '#42',
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.primary,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Dein Rang',
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                    Text(
-                      '15.200 Punkte',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const Icon(Icons.trending_up, color: Colors.green),
-            ],
-          ),
+          loading: () => const LinearProgressIndicator(),
+          error: (_, __) => const SizedBox.shrink(),
         ),
+        
         Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: _rankings.length,
-            itemBuilder: (context, index) {
-              final entry = _rankings[index];
-              return Card(
-                margin: const EdgeInsets.only(bottom: 4),
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: entry.rank <= 3
-                        ? [
-                            Colors.amber,
-                            Colors.grey.shade400,
-                            Colors.brown.shade300,
-                          ][entry.rank - 1]
-                        : theme.colorScheme.surfaceContainerHighest,
-                    child: Text(
-                      '${entry.rank}',
+          child: rankingsState.when(
+            data: (rankings) => ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: rankings.length,
+              itemBuilder: (context, index) {
+                final entry = rankings[index];
+                final isMe = entry.name == 'Kay';
+
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 4),
+                  color: isMe ? theme.colorScheme.primaryContainer.withValues(alpha: 0.3) : null,
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: entry.rank <= 3
+                          ? [
+                              Colors.amber,
+                              Colors.grey.shade400,
+                              Colors.brown.shade300,
+                            ][entry.rank - 1]
+                          : theme.colorScheme.surfaceContainerHighest,
+                      child: Text(
+                        '${entry.rank}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: entry.rank <= 3
+                              ? Colors.white
+                              : theme.colorScheme.onSurface,
+                        ),
+                      ),
+                    ),
+                    title: Text(
+                      entry.name,
                       style: TextStyle(
+                        fontWeight: isMe ? FontWeight.bold : FontWeight.normal,
+                      ),
+                    ),
+                    subtitle: Text('Level ${entry.level}'),
+                    trailing: Text(
+                      '${entry.points} Pkt.',
+                      style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: entry.rank <= 3
-                            ? Colors.white
-                            : theme.colorScheme.onSurface,
+                        color: theme.colorScheme.primary,
                       ),
                     ),
                   ),
-                  title: Text(
-                    entry.name,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text('Level ${entry.level}'),
-                  trailing: Text(
-                    '${entry.points} Pkt.',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.primary,
-                    ),
-                  ),
-                ),
-              );
-            },
+                );
+              },
+            ),
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (err, _) => Center(child: Text('Fehler: $err')),
           ),
         ),
       ],
     );
   }
-}
-
-class _RankEntry {
-  final int rank;
-  final String name;
-  final int level;
-  final int points;
-
-  const _RankEntry({
-    required this.rank,
-    required this.name,
-    required this.level,
-    required this.points,
-  });
 }
 
 // --- Trade Tab ---

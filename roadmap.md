@@ -91,7 +91,7 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 - [x] **Waschen / Putzen** – erhöht Sauberkeit
 - [x] **Medizin geben** – stellt Gesundheit wieder her (bei Krankheit)
 - [x] **Trainieren** – erhöht Kampfwerte, senkt Energie stark
-- [x] Cooldowns für Aktionen (z.B. Füttern max. alle 30 Min.)
+- [x] Cooldowns for Aktionen (z.B. Füttern max. alle 30 Min.)
 
 ### 3.4 Entwicklungsstufen
 - [x] **Ei** (Tag 0) – Schlüpf-Animation
@@ -283,8 +283,8 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 - [ ] Handelshistorie und Bestätigungsflow
 
 ### 8.4 Ranglisten & Statistiken
-- [ ] Globale Rangliste (XP, ELO, Siege)
-- [ ] Freundes-Rangliste
+- [x] Globale Rangliste (XP, ELO, Siege)
+- [x] Freundes-Rangliste (Simuliert)
 - [ ] Turnier-Rangliste (Gewinne, Teilnahmen)
 - [ ] Detaillierte Kampfstatistiken pro Kreatur
 
@@ -304,7 +304,7 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 - [ ] Benachrichtigungspräferenzen (ein-/ausschaltbar pro Typ)
 
 ### 9.2 Serverseitige Simulation
-- [ ] Cron-Jobs / Scheduler für Statuswert-Aktualisierung
+- [ ] Cron-Jobs / Scheduler for Statuswert-Aktualisierung
 - [ ] Statuswerte sinken alle 30 Minuten (konfigurierbar)
 - [ ] Krankheitsmechanik bei niedrigen Werten
 - [ ] **Tod-Mechanik bei Vernachlässigung:** permanenter Tod nach 7 Tagen Gesundheit = 0 (mit Warnungen)
