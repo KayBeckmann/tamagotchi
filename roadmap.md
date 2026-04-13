@@ -22,7 +22,7 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 - [x] REST-API-Schnittstellendefinition (Serverpod Endpoints)
 - [x] Authentifizierungs-Strategie festlegen (JWT + Refresh Tokens)
 - [x] WebSocket-Strategie für Echtzeit-Features (Arena, Statusupdates)
-- [x] Docker-Compose für lokale Entwicklung
+- [x] Docker-Compose for lokale Entwicklung
 
 ### 1.3 Datenmodelle (Entwurf)
 - [x] `User` – Benutzerkonto, Profil, Erfahrungspunkte, Wallet
@@ -189,12 +189,12 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 ## Phase 6: Turniersystem
 
 ### 6.1 Turnierstruktur
-- [ ] Turnier-Erstellung (Admin oder automatisch)
-- [ ] Turnier-Formate:
+- [x] Turnier-Erstellung (Admin oder automatisch)
+- [x] Turnier-Formate:
   - **Einzelausscheidung** (Single Elimination, 8/16/32 Teilnehmer)
   - **Doppel-Ausscheidung** (Double Elimination)
   - **Rundenturnier** (Round Robin, für kleinere Gruppen)
-- [ ] Turnier-Phasen:
+- [x] Turnier-Phasen:
   - Anmeldephase (mit Countdown)
   - Laufendes Turnier (Matches werden automatisch geplant)
   - Abgeschlossen (Ergebnisse & Auszahlung)
@@ -204,19 +204,19 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 - [ ] Automatischer Forfeit bei Nichtantreten
 
 ### 6.2 Turnier-UI
-- [ ] Turnier-Übersicht (alle offenen/laufenden/vergangenen Turniere)
+- [x] Turnier-Übersicht (alle offenen/laufenden/vergangenen Turniere)
 - [ ] Turnier-Detailansicht mit Bracket
-- [ ] Anmeldeflow (inkl. Bitcoin-Zahlung, siehe Phase 7)
+- [x] Anmeldeflow (inkl. Bitcoin-Zahlung, siehe Phase 7)
 - [ ] Live-Turnier-Status und Benachrichtigungen
 - [ ] Turnier-Ergebnishistorie
 
 ### 6.3 Backend – Turnier-Service
-- [ ] Turnier-CRUD-API
+- [x] Turnier-CRUD-API (Simuliert)
 - [ ] Automatisches Bracket-Generierung (Seeding nach ELO)
 - [ ] Kampfplanung und Zeitmanagement
-- [ ] Turnier-Status-Übergänge (Anmeldung → Aktiv → Abgeschlossen)
+- [x] Turnier-Status-Übergänge (Anmeldung → Aktiv → Abgeschlossen)
 - [ ] Gewinn-Berechnung und -Verteilung
-- [ ] Turnier-Statistiken und -Historie
+- [x] Turnier-Statistiken und -Historie (Simuliert)
 
 ---
 
@@ -225,16 +225,16 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 ### 7.1 Wallet-System
 - [ ] **Eigener Bitcoin Lightning Node** betreiben (LND auf eigenem Server)
 - [ ] **BTCPay Server** (self-hosted) als Payment-Gateway
-- [ ] Wallet-Adresse pro Benutzer generieren
-- [ ] BTC als universelle In-Game-Währung (Satoshis = Spielwährung)
-- [ ] Einzahlungen empfangen und bestätigen
-- [ ] Auszahlungen initiieren
-- [ ] Transaktionshistorie anzeigen
-- [ ] Kontostand anzeigen (in Satoshis und BTC)
+- [x] Wallet-Adresse pro Benutzer generieren (Simuliert)
+- [x] BTC als universelle In-Game-Währung (Satoshis = Spielwährung)
+- [x] Einzahlungen empfangen und bestätigen (Simuliert)
+- [x] Auszahlungen initiieren (Simuliert)
+- [x] Transaktionshistorie anzeigen
+- [x] Kontostand anzeigen (in Satoshis und BTC)
 
 ### 7.2 Turnier-Zahlungsflow
-- [ ] Startgebühr festlegen (z.B. 10.000–100.000 Satoshis)
-- [ ] Zahlung bei Turnier-Anmeldung einfordern
+- [x] Startgebühr festlegen (z.B. 10.000–100.000 Satoshis)
+- [x] Zahlung bei Turnier-Anmeldung einfordern
 - [ ] Zahlungsbestätigung abwarten (Lightning: sofort, On-Chain: Konfirmationen)
 - [ ] Pott berechnen (Summe aller Startgebühren)
 - [ ] Bearbeitungsgebühr abziehen (z.B. 5–10%, konfigurierbar)
