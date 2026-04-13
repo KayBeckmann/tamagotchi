@@ -117,7 +117,7 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 - [x] Inventar-Ansicht (Futter, Medizin, Spielzeug)
 - [x] Shop zum Erwerb von Gegenständen – **Bezahlung in Satoshis (BTC)**
 - [x] Satoshis verdienen durch Pflege, Kämpfe, Turniere
-- [ ] Tägliche Login-Belohnungen (in Satoshis)
+- [x] Tägliche Login-Belohnungen (in Satoshis)
 
 ### 4.3 Profil & Einstellungen
 - [x] Benutzerprofil (Name, Avatar, Statistiken)

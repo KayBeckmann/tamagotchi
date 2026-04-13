@@ -9,6 +9,8 @@ import '../../domain/models/creature_type.dart';
 import '../../domain/models/action_cooldown.dart';
 import '../../domain/models/item.dart';
 import '../../data/creature_repository.dart';
+import '../../wallet/data/wallet_repository.dart';
+import '../../wallet/presentation/providers/wallet_provider.dart';
 import '../providers/creature_provider.dart';
 import '../widgets/cooldown_indicator.dart';
 import '../widgets/creature_sprite.dart';
@@ -22,6 +24,21 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final creatureState = ref.watch(creatureListProvider(_userId));
+
+    // Check for daily reward on app load
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final rewardGiven = await ref.read(walletRepositoryProvider).checkDailyReward(_userId);
+      if (rewardGiven && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Tägliche Belohnung: +100 Satoshis erhalten!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        ref.invalidate(balanceProvider(_userId));
+        ref.invalidate(transactionsProvider(_userId));
+      }
+    });
 
     return Scaffold(
       appBar: AppBar(

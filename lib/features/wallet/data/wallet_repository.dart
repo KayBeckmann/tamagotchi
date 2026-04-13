@@ -4,6 +4,7 @@ class WalletRepository {
   // In-memory storage for development
   final Map<String, int> _balances = {};
   final List<Transaction> _transactions = [];
+  final Map<String, DateTime> _lastRewardDates = {};
 
   Future<int> getBalance(String userId) async {
     // TODO: Replace with actual API call
@@ -42,6 +43,26 @@ class WalletRepository {
       isPositive: false,
       timestamp: DateTime.now(),
     ));
+  }
+
+  Future<bool> checkDailyReward(String userId) async {
+    // TODO: Replace with actual API call
+    await Future.delayed(const Duration(milliseconds: 100));
+    final lastReward = _lastRewardDates[userId];
+    final now = DateTime.now();
+    
+    if (lastReward == null || 
+        lastReward.year != now.year || 
+        lastReward.month != now.month || 
+        lastReward.day != now.day) {
+      
+      // Give daily reward: 100 Sats
+      await addSatoshi(userId, 100, 'Tägliche Belohnung');
+      _lastRewardDates[userId] = now;
+      return true;
+    }
+    
+    return false;
   }
 
   Future<List<Transaction>> getTransactions(String userId) async {
