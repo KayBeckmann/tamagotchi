@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../profile/data/achievement_repository.dart';
 import '../../wallet/data/wallet_repository.dart';
 import '../domain/models/creature.dart';
 import '../domain/models/creature_type.dart';
@@ -10,6 +11,7 @@ import '../domain/models/item.dart';
 /// Repository for creature operations.
 class CreatureRepository {
   final WalletRepository _walletRepository;
+  final AchievementRepository _achievementRepository;
 
   // In-memory storage for development
   final List<Creature> _creatures = [];
@@ -19,7 +21,7 @@ class CreatureRepository {
   // User inventory (in-memory for development)
   final Map<String, List<InventoryItem>> _userInventory = {};
 
-  CreatureRepository(this._walletRepository);
+  CreatureRepository(this._walletRepository, this._achievementRepository);
 
   /// Get all creatures for a user.
   Future<List<Creature>> getCreatures(String userId) async {
@@ -166,6 +168,9 @@ class CreatureRepository {
     // Reward: 10 Sats for feeding
     await _walletRepository.addSatoshi(creature.userId, 10, 'Kreatur gefüttert (${creature.name})');
 
+    // Achievement: First meal
+    await _achievementRepository.unlockAchievement(creature.userId, 'care_first_meal');
+
     return updateCreature(updated);
   }
 
@@ -216,6 +221,9 @@ class CreatureRepository {
 
     // Reward: 15 Sats for cleaning
     await _walletRepository.addSatoshi(creature.userId, 15, 'Kreatur gewaschen (${creature.name})');
+
+    // Achievement: Clean freak (10 times)
+    await _achievementRepository.updateProgress(creature.userId, 'care_clean_freak', 0.1);
 
     return updateCreature(updated);
   }
@@ -291,6 +299,9 @@ class CreatureRepository {
 
     // Reward: 25 Sats for training
     await _walletRepository.addSatoshi(creature.userId, 25, 'Kreatur trainiert (${creature.name})');
+
+    // Achievement: Pro trainer (25 times)
+    await _achievementRepository.updateProgress(creature.userId, 'care_pro_trainer', 0.04);
 
     return updateCreature(updated);
   }
@@ -400,5 +411,6 @@ class CooldownException implements Exception {
 /// Provider for CreatureRepository.
 final creatureRepositoryProvider = Provider<CreatureRepository>((ref) {
   final walletRepo = ref.watch(walletRepositoryProvider);
-  return CreatureRepository(walletRepo);
+  final achievementRepo = ref.watch(achievementRepositoryProvider);
+  return CreatureRepository(walletRepo, achievementRepo);
 });

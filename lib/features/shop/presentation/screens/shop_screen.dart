@@ -3,23 +3,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/utils/responsive_layout.dart';
 import '../../../creature/domain/models/item.dart';
-import '../../../creature/data/creature_repository.dart';
+import '../../data/shop_repository.dart';
+import '../../../wallet/presentation/providers/wallet_provider.dart';
 
-class ShopScreen extends ConsumerStatefulWidget {
+class ShopScreen extends ConsumerWidget {
   const ShopScreen({super.key});
 
-  @override
-  ConsumerState<ShopScreen> createState() => _ShopScreenState();
-}
-
-class _ShopScreenState extends ConsumerState<ShopScreen> {
-  // TODO: Get actual user ID and balance from auth/wallet
+  // TODO: Get actual user ID from auth
   static const _userId = 'user_1';
-  int _userBalance = 10000; // Starting balance in Satoshis
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final balanceState = ref.watch(balanceProvider(_userId));
 
     return DefaultTabController(
       length: 3,
@@ -49,12 +45,20 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
                     color: theme.colorScheme.onPrimaryContainer,
                   ),
                   const SizedBox(width: 8),
-                  Text(
-                    'Guthaben: $_userBalance Satoshis',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.onPrimaryContainer,
+                  balanceState.when(
+                    data: (balance) => Text(
+                      'Guthaben: $balance Satoshis',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.onPrimaryContainer,
+                      ),
                     ),
+                    loading: () => const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                    error: (_, __) => const Text('Fehler beim Laden'),
                   ),
                 ],
               ),
@@ -66,18 +70,18 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
                 children: [
                   _ShopTab(
                     items: ItemCatalog.food,
-                    userBalance: _userBalance,
-                    onBuy: _buyItem,
+                    userBalance: balanceState.value ?? 0,
+                    onBuy: (item, quantity) => _buyItem(context, ref, item, quantity),
                   ),
                   _ShopTab(
                     items: ItemCatalog.medicine,
-                    userBalance: _userBalance,
-                    onBuy: _buyItem,
+                    userBalance: balanceState.value ?? 0,
+                    onBuy: (item, quantity) => _buyItem(context, ref, item, quantity),
                   ),
                   _ShopTab(
                     items: ItemCatalog.toys,
-                    userBalance: _userBalance,
-                    onBuy: _buyItem,
+                    userBalance: balanceState.value ?? 0,
+                    onBuy: (item, quantity) => _buyItem(context, ref, item, quantity),
                   ),
                 ],
               ),
@@ -88,10 +92,11 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
     );
   }
 
-  Future<void> _buyItem(Item item, int quantity) async {
+  Future<void> _buyItem(BuildContext context, WidgetRef ref, Item item, int quantity) async {
     final totalCost = item.priceSatoshis * quantity;
+    final currentBalance = ref.read(balanceProvider(_userId)).value ?? 0;
 
-    if (totalCost > _userBalance) {
+    if (totalCost > currentBalance) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Nicht genug Satoshis!'),
@@ -134,17 +139,13 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
     if (confirmed != true) return;
 
     try {
-      await ref.read(creatureRepositoryProvider).addToInventory(
-        _userId,
-        item.id,
-        quantity,
-      );
+      await ref.read(shopRepositoryProvider).buyItem(_userId, item.id, quantity);
 
-      setState(() {
-        _userBalance -= totalCost;
-      });
+      // Refresh data
+      ref.invalidate(balanceProvider(_userId));
+      ref.invalidate(transactionsProvider(_userId));
 
-      if (mounted) {
+      if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${item.name} x$quantity gekauft!'),
@@ -153,7 +154,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
         );
       }
     } catch (e) {
-      if (mounted) {
+      if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Fehler: $e'),

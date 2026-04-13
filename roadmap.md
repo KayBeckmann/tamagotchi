@@ -122,7 +122,7 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 ### 4.3 Profil & Einstellungen
 - [x] Benutzerprofil (Name, Avatar, Statistiken)
 - [x] Kreatur-Übersicht (alle eigenen Kreaturen)
-- [ ] Errungenschaften / Achievements
+- [x] Errungenschaften / Achievements
 - [x] Einstellungen (Benachrichtigungen, Sprache, Theme)
 - [x] Dark Mode / Light Mode
 

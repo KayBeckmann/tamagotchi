@@ -7,6 +7,8 @@ import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../creature/presentation/providers/creature_provider.dart';
 import '../../../creature/domain/models/creature.dart';
 import '../providers/profile_provider.dart';
+import '../providers/achievements_provider.dart';
+import '../domain/models/achievement.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -21,6 +23,7 @@ class ProfileScreen extends ConsumerWidget {
     final userId = authState.userId;
     final profileState = ref.watch(profileProvider(userId));
     final statistics = ref.watch(userStatisticsProvider(userId.toString()));
+    final achievementsState = ref.watch(achievementsProvider(userId.toString()));
 
     return Scaffold(
       appBar: AppBar(
@@ -34,11 +37,21 @@ class ProfileScreen extends ConsumerWidget {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: () => ref.read(profileProvider(userId).notifier).refresh(),
+        onRefresh: () async {
+          ref.invalidate(profileProvider(userId));
+          ref.invalidate(achievementsProvider(userId.toString()));
+        },
         child: switch (profileState) {
           ProfileLoading() => const Center(child: CircularProgressIndicator()),
           ProfileError(:final message) => _buildError(context, message, ref, userId),
-          ProfileLoaded(:final profile) => _buildProfile(context, ref, profile, statistics, userId.toString()),
+          ProfileLoaded(:final profile) => _buildProfile(
+              context, 
+              ref, 
+              profile, 
+              statistics, 
+              achievementsState,
+              userId.toString(),
+            ),
         },
       ),
     );
@@ -54,7 +67,7 @@ class ProfileScreen extends ConsumerWidget {
           Text(message, style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 16),
           ElevatedButton.icon(
-            onPressed: () => ref.read(profileProvider(userId).notifier).refresh(),
+            onPressed: () => ref.invalidate(profileProvider(userId)),
             icon: const Icon(Icons.refresh),
             label: const Text('Erneut versuchen'),
           ),
@@ -68,6 +81,7 @@ class ProfileScreen extends ConsumerWidget {
     WidgetRef ref,
     UserProfile profile,
     UserStatistics statistics,
+    AsyncValue<List<Achievement>> achievementsState,
     String userId,
   ) {
     final dateFormat = DateFormat('dd.MM.yyyy');
@@ -81,6 +95,10 @@ class ProfileScreen extends ConsumerWidget {
 
         // Level Progress
         _buildLevelCard(context, profile),
+        const SizedBox(height: 16),
+
+        // Achievements Section
+        _buildAchievementsSection(context, achievementsState),
         const SizedBox(height: 16),
 
         // Battle Stats
@@ -235,6 +253,66 @@ class ProfileScreen extends ConsumerWidget {
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAchievementsSection(BuildContext context, AsyncValue<List<Achievement>> achievementsState) {
+    final theme = Theme.of(context);
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.emoji_events, color: theme.colorScheme.primary),
+                const SizedBox(width: 8),
+                Text(
+                  'Errungenschaften',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            achievementsState.when(
+              data: (achievements) {
+                final unlocked = achievements.where((a) => a.isUnlocked).toList();
+                return Column(
+                  children: [
+                    LinearProgressIndicator(
+                      value: unlocked.length / achievements.length,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${unlocked.length} von ${achievements.length} freigeschaltet',
+                      style: theme.textTheme.bodySmall,
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      height: 100,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: achievements.length,
+                        itemBuilder: (context, index) {
+                          final a = achievements[index];
+                          return _AchievementIcon(achievement: a);
+                        },
+                      ),
+                    ),
+                  ],
+                );
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (err, _) => Text('Fehler: $err'),
             ),
           ],
         ),
@@ -454,6 +532,78 @@ class ProfileScreen extends ConsumerWidget {
               : null,
         ),
       )).toList(),
+    );
+  }
+}
+
+class _AchievementIcon extends StatelessWidget {
+  final Achievement achievement;
+
+  const _AchievementIcon({required this.achievement});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = achievement.isUnlocked
+        ? theme.colorScheme.primary
+        : theme.colorScheme.outline.withValues(alpha: 0.5);
+
+    return Tooltip(
+      message: '${achievement.title}\n${achievement.description}',
+      child: Container(
+        width: 80,
+        margin: const EdgeInsets.only(right: 12),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                CircularProgressIndicator(
+                  value: achievement.progress,
+                  strokeWidth: 2,
+                  backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                  valueColor: AlwaysStoppedAnimation<Color>(color),
+                ),
+                CircleAvatar(
+                  radius: 24,
+                  backgroundColor: color.withValues(alpha: 0.1),
+                  child: Icon(
+                    achievement.icon,
+                    color: color,
+                    size: 24,
+                  ),
+                ),
+                if (achievement.isUnlocked)
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        color: Colors.green,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 2),
+                      ),
+                      child: const Icon(Icons.check, size: 10, color: Colors.white),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              achievement.title,
+              style: theme.textTheme.labelSmall?.copyWith(
+                fontSize: 10,
+                color: achievement.isUnlocked ? null : theme.colorScheme.outline,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
