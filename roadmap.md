@@ -138,49 +138,49 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 ## Phase 5: Arena – PvP-Kämpfe
 
 ### 5.1 Kampfsystem-Design
-- [ ] Rundenbasiertes Kampfsystem
-- [ ] Kampfwerte berechnen aus:
+- [x] Rundenbasiertes Kampfsystem
+- [x] Kampfwerte berechnen aus:
   - Grundwerte der Kreatur-Art (Angriff, Verteidigung, Geschwindigkeit)
   - Entwicklungsstufe (Multiplikator)
   - Aktuelle Statuswerte (hungrige Kreatur kämpft schlechter)
   - Trainings-Bonus
   - Zufallsfaktor (10–20%)
-- [ ] Angriffs-Typen:
+- [x] Angriffs-Typen:
   - Normaler Angriff
   - Spezialangriff (kreaturspezifisch, Cooldown)
   - Verteidigung (reduziert nächsten eingehenden Schaden)
   - Ausweichen (Chance den Angriff zu vermeiden)
-- [ ] Kampf-HP separat von Gesundheits-Statuswert
-- [ ] Kampf endet bei HP = 0 oder nach max. 20 Runden (dann Entscheidung nach HP%)
+- [x] Kampf-HP separat von Gesundheits-Statuswert
+- [x] Kampf endet bei HP = 0 oder nach max. 20 Runden (dann Entscheidung nach HP%)
 
 ### 5.2 Matchmaking
-- [ ] Matchmaking-Queue (sucht Gegner ähnlicher Stärke)
+- [x] Matchmaking-Queue (sucht Gegner ähnlicher Stärke)
 - [ ] ELO-Rating-System für faires Matching
-- [ ] Wartezeit-Anzeige
+- [x] Wartezeit-Anzeige
 - [ ] Kampf-Einladungen an Freunde (Freundesliste)
-- [ ] Zufallsgegner-Suche
+- [x] Zufallsgegner-Suche
 
 ### 5.3 Kampf-UI
-- [ ] Kampf-Arena-Bildschirm (beide Kreaturen gegenüber)
-- [ ] Kampf-Animationen (Angriff, Treffer, Ausweichen)
-- [ ] HP-Balken für beide Kreaturen
-- [ ] Aktionsauswahl (Angriff, Spezial, Verteidigung, Ausweichen)
-- [ ] Kampflog (textueller Verlauf)
-- [ ] Ergebnis-Screen (Gewinner, XP-Gewinn, Belohnungen)
+- [x] Kampf-Arena-Bildschirm (beide Kreaturen gegenüber)
+- [x] Kampf-Animationen (Angriff, Treffer, Ausweichen)
+- [x] HP-Balken für beide Kreaturen
+- [x] Aktionsauswahl (Angriff, Spezial, Verteidigung, Ausweichen)
+- [x] Kampflog (textueller Verlauf)
+- [x] Ergebnis-Screen (Gewinner, XP-Gewinn, Belohnungen)
 
 ### 5.4 Backend – Arena-Service
 - [ ] WebSocket-basierte Echtzeit-Kampfkommunikation
-- [ ] Kampflogik serverseitig (Anti-Cheat)
-- [ ] Kampfergebnisse persistent speichern
+- [x] Kampflogik serverseitig (Anti-Cheat / Simuliert)
+- [x] Kampfergebnisse persistent speichern (Simuliert)
 - [ ] Rangliste / Leaderboard
-- [ ] Erfahrungspunkte (XP) nach Kampf vergeben
+- [x] Erfahrungspunkte (XP) nach Kampf vergeben
   - Sieg: +50 XP
   - Niederlage: +10 XP
   - Bonus bei Sieg gegen stärkeren Gegner
 
 ### 5.5 Belohnungssystem
 - [ ] XP-Level-System für Benutzer (nicht Kreatur)
-- [ ] Satoshis als Kampfbelohnung
+- [x] Satoshis als Kampfbelohnung
 - [ ] Seltene Items bei Siegesserien
 - [ ] Saisonale Ranglisten mit Belohnungen
 
