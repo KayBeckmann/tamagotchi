@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../wallet/data/wallet_repository.dart';
 import '../domain/models/creature.dart';
 import '../domain/models/creature_type.dart';
 import '../domain/models/action_cooldown.dart';
@@ -8,6 +9,8 @@ import '../domain/models/item.dart';
 
 /// Repository for creature operations.
 class CreatureRepository {
+  final WalletRepository _walletRepository;
+
   // In-memory storage for development
   final List<Creature> _creatures = [];
   final _uuid = const Uuid();
@@ -15,6 +18,8 @@ class CreatureRepository {
 
   // User inventory (in-memory for development)
   final Map<String, List<InventoryItem>> _userInventory = {};
+
+  CreatureRepository(this._walletRepository);
 
   /// Get all creatures for a user.
   Future<List<Creature>> getCreatures(String userId) async {
@@ -158,6 +163,9 @@ class CreatureRepository {
     // Record cooldown
     _cooldownManager.recordAction(creatureId, ActionType.feed);
 
+    // Reward: 10 Sats for feeding
+    await _walletRepository.addSatoshi(creature.userId, 10, 'Kreatur gefüttert (${creature.name})');
+
     return updateCreature(updated);
   }
 
@@ -181,6 +189,9 @@ class CreatureRepository {
     // Record cooldown
     _cooldownManager.recordAction(creatureId, ActionType.play);
 
+    // Reward: 20 Sats for playing
+    await _walletRepository.addSatoshi(creature.userId, 20, 'Mit Kreatur gespielt (${creature.name})');
+
     return updateCreature(updated);
   }
 
@@ -202,6 +213,9 @@ class CreatureRepository {
 
     // Record cooldown
     _cooldownManager.recordAction(creatureId, ActionType.clean);
+
+    // Reward: 15 Sats for cleaning
+    await _walletRepository.addSatoshi(creature.userId, 15, 'Kreatur gewaschen (${creature.name})');
 
     return updateCreature(updated);
   }
@@ -274,6 +288,9 @@ class CreatureRepository {
 
     // Record cooldown
     _cooldownManager.recordAction(creatureId, ActionType.train);
+
+    // Reward: 25 Sats for training
+    await _walletRepository.addSatoshi(creature.userId, 25, 'Kreatur trainiert (${creature.name})');
 
     return updateCreature(updated);
   }
@@ -382,5 +399,6 @@ class CooldownException implements Exception {
 
 /// Provider for CreatureRepository.
 final creatureRepositoryProvider = Provider<CreatureRepository>((ref) {
-  return CreatureRepository();
+  final walletRepo = ref.watch(walletRepositoryProvider);
+  return CreatureRepository(walletRepo);
 });

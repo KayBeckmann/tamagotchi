@@ -1,232 +1,159 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import '../providers/wallet_provider.dart';
+import '../../data/wallet_repository.dart';
 
-class WalletScreen extends StatelessWidget {
+class WalletScreen extends ConsumerWidget {
   const WalletScreen({super.key});
 
+  // TODO: Get actual user ID from auth
+  static const _userId = 'user_1';
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final balanceState = ref.watch(balanceProvider(_userId));
+    final transactionsState = ref.watch(transactionsProvider(_userId));
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Wallet'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () {
+              ref.invalidate(balanceProvider(_userId));
+              ref.invalidate(transactionsProvider(_userId));
+            },
+          ),
+        ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          // Balance card
-          Card(
-            clipBehavior: Clip.antiAlias,
-            child: Container(
+      body: RefreshIndicator(
+        onPressed: () async {
+          ref.invalidate(balanceProvider(_userId));
+          ref.invalidate(transactionsProvider(_userId));
+        },
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            // Balance card
+            balanceState.when(
+              data: (balance) => _BalanceCard(balance: balance),
+              loading: () => const _LoadingBalanceCard(),
+              error: (err, stack) => Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text('Fehler: $err'),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Action buttons
+            Row(
+              children: [
+                Expanded(
+                  child: FilledButton.icon(
+                    onPressed: () {
+                      _showDepositDialog(context);
+                    },
+                    icon: const Icon(Icons.arrow_downward),
+                    label: const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      child: Text('Einzahlen'),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      _showWithdrawDialog(context);
+                    },
+                    icon: const Icon(Icons.arrow_upward),
+                    label: const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      child: Text('Auszahlen'),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
               width: double.infinity,
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    theme.colorScheme.primary,
-                    theme.colorScheme.tertiary,
+              child: FilledButton.tonal(
+                onPressed: () {
+                  // TODO: Lightning-Adresse anzeigen
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Lightning-Adresse kopiert!'),
+                    ),
+                  );
+                },
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.bolt, size: 20),
+                    SizedBox(width: 8),
+                    Text('Lightning-Adresse anzeigen'),
                   ],
                 ),
               ),
-              child: Column(
-                children: [
-                  Text(
-                    'Guthaben',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: Colors.white70,
-                    ),
+            ),
+            const SizedBox(height: 24),
+
+            // Quick stats (Static for now)
+            Row(
+              children: [
+                Expanded(
+                  child: _QuickStat(
+                    label: 'Einnahmen\ndiesen Monat',
+                    value: '+3.200',
+                    icon: Icons.trending_up,
+                    color: Colors.green,
                   ),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.toll,
-                        color: Colors.white,
-                        size: 32,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _QuickStat(
+                    label: 'Ausgaben\ndiesen Monat',
+                    value: '-1.800',
+                    icon: Icons.trending_down,
+                    color: Colors.red,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+
+            // Transaction history
+            Text(
+              'Transaktionen',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            transactionsState.when(
+              data: (transactions) => transactions.isEmpty
+                  ? const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(32),
+                        child: Text('Noch keine Transaktionen'),
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        '12.500',
-                        style: theme.textTheme.displaySmall?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Satoshi',
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: Colors.white70,
+                    )
+                  : Column(
+                      children: transactions
+                          .map((t) => _TransactionTile(transaction: t))
+                          .toList(),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '\u2248 4,25 EUR',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: Colors.white54,
-                    ),
-                  ),
-                ],
-              ),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (err, stack) => Text('Fehler beim Laden: $err'),
             ),
-          ),
-          const SizedBox(height: 16),
-
-          // Action buttons
-          Row(
-            children: [
-              Expanded(
-                child: FilledButton.icon(
-                  onPressed: () {
-                    _showDepositDialog(context);
-                  },
-                  icon: const Icon(Icons.arrow_downward),
-                  label: const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    child: Text('Einzahlen'),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () {
-                    _showWithdrawDialog(context);
-                  },
-                  icon: const Icon(Icons.arrow_upward),
-                  label: const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    child: Text('Auszahlen'),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton.tonal(
-              onPressed: () {
-                // TODO: Lightning-Adresse anzeigen
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Lightning-Adresse kopiert!'),
-                  ),
-                );
-              },
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.bolt, size: 20),
-                  SizedBox(width: 8),
-                  Text('Lightning-Adresse anzeigen'),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          // Quick stats
-          Row(
-            children: [
-              Expanded(
-                child: _QuickStat(
-                  label: 'Einnahmen\ndiesen Monat',
-                  value: '+3.200',
-                  icon: Icons.trending_up,
-                  color: Colors.green,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _QuickStat(
-                  label: 'Ausgaben\ndiesen Monat',
-                  value: '-1.800',
-                  icon: Icons.trending_down,
-                  color: Colors.red,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-
-          // Transaction history
-          Text(
-            'Transaktionen',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 8),
-          const _TransactionTile(
-            title: 'Turnier-Gewinn',
-            subtitle: 'Wochenend-Duell · 3. Platz',
-            amount: '+2.500',
-            isPositive: true,
-            icon: Icons.emoji_events,
-            iconColor: Colors.amber,
-            date: 'Heute, 14:23',
-          ),
-          const _TransactionTile(
-            title: 'Shop-Einkauf',
-            subtitle: 'Goldener Apfel',
-            amount: '-1.000',
-            isPositive: false,
-            icon: Icons.shopping_bag,
-            iconColor: Colors.orange,
-            date: 'Heute, 10:15',
-          ),
-          const _TransactionTile(
-            title: 'Arena-Sieg',
-            subtitle: 'vs. Spieler_42',
-            amount: '+500',
-            isPositive: true,
-            icon: Icons.shield,
-            iconColor: Colors.blue,
-            date: 'Gestern, 20:45',
-          ),
-          const _TransactionTile(
-            title: 'Einzahlung',
-            subtitle: 'Lightning Network',
-            amount: '+5.000',
-            isPositive: true,
-            icon: Icons.bolt,
-            iconColor: Colors.purple,
-            date: 'Gestern, 18:00',
-          ),
-          const _TransactionTile(
-            title: 'Shop-Einkauf',
-            subtitle: 'Heiltrank x3',
-            amount: '-300',
-            isPositive: false,
-            icon: Icons.shopping_bag,
-            iconColor: Colors.orange,
-            date: '30. Maerz, 09:30',
-          ),
-          const _TransactionTile(
-            title: 'Turnier-Eintritt',
-            subtitle: 'Wochenend-Duell',
-            amount: '-500',
-            isPositive: false,
-            icon: Icons.confirmation_number,
-            iconColor: Colors.red,
-            date: '29. Maerz, 15:00',
-          ),
-          const _TransactionTile(
-            title: 'Handelsgewinn',
-            subtitle: 'Verkauf: Zauberstab',
-            amount: '+1.200',
-            isPositive: true,
-            icon: Icons.swap_horiz,
-            iconColor: Colors.teal,
-            date: '28. Maerz, 11:20',
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -335,6 +262,98 @@ class WalletScreen extends StatelessWidget {
   }
 }
 
+class _BalanceCard extends StatelessWidget {
+  final int balance;
+
+  const _BalanceCard({required this.balance});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final numberFormat = NumberFormat('#,###', 'de_DE');
+    
+    // Simple conversion for UI (placeholder)
+    final eurValue = (balance * 0.00034).toStringAsFixed(2);
+
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              theme.colorScheme.primary,
+              theme.colorScheme.tertiary,
+            ],
+          ),
+        ),
+        child: Column(
+          children: [
+            Text(
+              'Guthaben',
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: Colors.white70,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.toll,
+                  color: Colors.white,
+                  size: 32,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  numberFormat.format(balance),
+                  style: theme.textTheme.displaySmall?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Satoshi',
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: Colors.white70,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '\u2248 $eurValue EUR',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: Colors.white54,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LoadingBalanceCard extends StatelessWidget {
+  const _LoadingBalanceCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Container(
+        height: 160,
+        width: double.infinity,
+        padding: const EdgeInsets.all(24),
+        child: const Center(child: CircularProgressIndicator()),
+      ),
+    );
+  }
+}
+
 class _QuickStat extends StatelessWidget {
   final String label;
   final String value;
@@ -382,27 +401,18 @@ class _QuickStat extends StatelessWidget {
 }
 
 class _TransactionTile extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final String amount;
-  final bool isPositive;
-  final IconData icon;
-  final Color iconColor;
-  final String date;
+  final Transaction transaction;
 
-  const _TransactionTile({
-    required this.title,
-    required this.subtitle,
-    required this.amount,
-    required this.isPositive,
-    required this.icon,
-    required this.iconColor,
-    required this.date,
-  });
+  const _TransactionTile({required this.transaction});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final numberFormat = NumberFormat('#,###', 'de_DE');
+    final dateFormat = DateFormat('dd. MMM, HH:mm', 'de_DE');
+
+    final icon = _getIcon(transaction.title);
+    final iconColor = _getColor(transaction.title);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 4),
@@ -412,26 +422,47 @@ class _TransactionTile extends StatelessWidget {
           child: Icon(icon, color: iconColor, size: 20),
         ),
         title: Text(
-          title,
+          transaction.title,
           style: theme.textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.bold,
           ),
         ),
         subtitle: Text(
-          '$subtitle\n$date',
+          dateFormat.format(transaction.timestamp),
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),
         ),
-        isThreeLine: true,
         trailing: Text(
-          '$amount Sats',
+          '${transaction.isPositive ? '+' : '-'}${numberFormat.format(transaction.amount)} Sats',
           style: theme.textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.bold,
-            color: isPositive ? Colors.green : Colors.red,
+            color: transaction.isPositive ? Colors.green : Colors.red,
           ),
         ),
       ),
     );
+  }
+
+  IconData _getIcon(String title) {
+    if (title.contains('gefüttert')) return Icons.restaurant;
+    if (title.contains('gespielt')) return Icons.sports_esports;
+    if (title.contains('gewaschen')) return Icons.shower;
+    if (title.contains('trainiert')) return Icons.fitness_center;
+    if (title.contains('Sieg')) return Icons.shield;
+    if (title.contains('Gewinn')) return Icons.emoji_events;
+    if (title.contains('Einkauf')) return Icons.shopping_bag;
+    return Icons.toll;
+  }
+
+  Color _getColor(String title) {
+    if (title.contains('gefüttert')) return Colors.orange;
+    if (title.contains('gespielt')) return Colors.pink;
+    if (title.contains('gewaschen')) return Colors.blue;
+    if (title.contains('trainiert')) return Colors.green;
+    if (title.contains('Sieg')) return Colors.blue;
+    if (title.contains('Gewinn')) return Colors.amber;
+    if (title.contains('Einkauf')) return Colors.orange;
+    return Colors.grey;
   }
 }

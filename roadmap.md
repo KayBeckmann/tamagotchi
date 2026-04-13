@@ -106,7 +106,7 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 ## Phase 4: UI/UX – Hauptbildschirme
 
 ### 4.1 Hauptscreen (Tamagotchi-Ansicht)
-- [ ] Kreatur-Animation (animiertes Sprite, zentral)
+- [x] Kreatur-Animation (animiertes Sprite, zentral)
 - [x] Statusleisten (Hunger, Glück, Energie, Gesundheit, Sauberkeit)
 - [x] Aktionsbuttons (Füttern, Spielen, Schlafen, Waschen, Trainieren)
 - [x] Hintergrund wechselt je nach Tageszeit (Tag/Nacht-Zyklus)
@@ -116,7 +116,7 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 ### 4.2 Inventar & Shop
 - [x] Inventar-Ansicht (Futter, Medizin, Spielzeug)
 - [x] Shop zum Erwerb von Gegenständen – **Bezahlung in Satoshis (BTC)**
-- [ ] Satoshis verdienen durch Pflege, Kämpfe, Turniere
+- [x] Satoshis verdienen durch Pflege, Kämpfe, Turniere
 - [ ] Tägliche Login-Belohnungen (in Satoshis)
 
 ### 4.3 Profil & Einstellungen
