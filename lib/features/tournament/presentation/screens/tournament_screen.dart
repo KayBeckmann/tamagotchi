@@ -27,7 +27,7 @@ class TournamentScreen extends ConsumerWidget {
         ],
       ),
       body: RefreshIndicator(
-        onPressed: () async => ref.invalidate(tournamentListProvider),
+        onRefresh: () async => ref.invalidate(tournamentListProvider),
         child: tournamentListState.when(
           data: (tournaments) {
             final active = tournaments.where((t) => t.status == TournamentStatus.ongoing).toList();

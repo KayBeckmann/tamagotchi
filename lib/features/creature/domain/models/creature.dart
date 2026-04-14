@@ -58,6 +58,8 @@ class Creature extends Equatable {
   final DateTime lastStatusUpdateAt;
   final DateTime createdAt;
 
+  int get level => 1 + (ageInDays ~/ 2); // Simple level calculation
+
   const Creature({
     required this.id,
     required this.userId,

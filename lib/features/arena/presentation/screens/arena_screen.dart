@@ -29,7 +29,7 @@ class ArenaScreen extends ConsumerWidget {
 }
 
 class _BattleView extends ConsumerWidget {
-  final dynamic creature; // Using dynamic because of import issues or just convenience
+  final dynamic creature; 
 
   const _BattleView({required this.creature});
 
@@ -156,6 +156,7 @@ class _BattleArenaView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final activeCreature = ref.read(creatureListProvider('user_1')) as CreatureListLoaded;
 
     return Column(
       children: [
@@ -227,7 +228,7 @@ class _BattleArenaView extends ConsumerWidget {
                 icon: Icons.flash_on,
                 color: Colors.red,
                 onPressed: session.isPlayerTurn 
-                    ? () => ref.read(battleProvider(ref.read(creatureListProvider('user_1')).activeCreature!).notifier).executePlayerAction(BattleAction.attack)
+                    ? () => ref.read(battleProvider(activeCreature.activeCreature!).notifier).executePlayerAction(BattleAction.attack)
                     : null,
               ),
               _ActionButton(
@@ -235,7 +236,7 @@ class _BattleArenaView extends ConsumerWidget {
                 icon: Icons.auto_awesome,
                 color: Colors.purple,
                 onPressed: session.isPlayerTurn 
-                    ? () => ref.read(battleProvider(ref.read(creatureListProvider('user_1')).activeCreature!).notifier).executePlayerAction(BattleAction.special)
+                    ? () => ref.read(battleProvider(activeCreature.activeCreature!).notifier).executePlayerAction(BattleAction.special)
                     : null,
               ),
               _ActionButton(
@@ -243,15 +244,15 @@ class _BattleArenaView extends ConsumerWidget {
                 icon: Icons.shield,
                 color: Colors.blue,
                 onPressed: session.isPlayerTurn 
-                    ? () => ref.read(battleProvider(ref.read(creatureListProvider('user_1')).activeCreature!).notifier).executePlayerAction(BattleAction.defend)
+                    ? () => ref.read(battleProvider(activeCreature.activeCreature!).notifier).executePlayerAction(BattleAction.defend)
                     : null,
               ),
               _ActionButton(
                 label: 'Ausweichen',
-                icon: Icons.Directions_run,
+                icon: Icons.directions_run,
                 color: Colors.green,
                 onPressed: session.isPlayerTurn 
-                    ? () => ref.read(battleProvider(ref.read(creatureListProvider('user_1')).activeCreature!).notifier).executePlayerAction(BattleAction.dodge)
+                    ? () => ref.read(battleProvider(activeCreature.activeCreature!).notifier).executePlayerAction(BattleAction.dodge)
                     : null,
               ),
             ],

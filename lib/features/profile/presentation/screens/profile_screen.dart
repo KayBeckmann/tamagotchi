@@ -288,7 +288,7 @@ class ProfileScreen extends ConsumerWidget {
                 return Column(
                   children: [
                     LinearProgressIndicator(
-                      value: unlocked.length / achievements.length,
+                      value: achievements.isEmpty ? 0 : unlocked.length / achievements.length,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     const SizedBox(height: 8),

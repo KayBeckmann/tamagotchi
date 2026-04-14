@@ -12,7 +12,6 @@ class TournamentDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tournamentState = ref.watch(tournamentDetailProvider(tournamentId));
-    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -153,7 +152,6 @@ class TournamentDetailScreen extends ConsumerWidget {
   }
 
   void _joinTournament(BuildContext context, WidgetRef ref, Tournament tournament) async {
-    // Logik bereits in TournamentScreen implementiert, hier zur Konsistenz
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(

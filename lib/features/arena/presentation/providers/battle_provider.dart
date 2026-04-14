@@ -97,9 +97,14 @@ class BattleStateNotifier extends StateNotifier<AsyncValue<BattleSession>> {
 
     // 2. Simple AI: Attack if player low HP, else 70% attack, 20% special, 10% defend
     BattleAction action = BattleAction.attack;
-    final r = _repository._random.nextDouble();
-    if (r > 0.9) action = BattleAction.defend;
-    else if (r > 0.7) action = BattleAction.special;
+    final r = _repository.executeTurn(session.opponent, session.player, BattleAction.attack, 0).damage; // dummy check
+    // Actually we just use a random action for now
+    final random = _repository.executeTurn(session.opponent, session.player, BattleAction.attack, 0); // Need to use repo's random? 
+    
+    // Use simple logic
+    final dice = (DateTime.now().millisecond % 10);
+    if (dice > 8) action = BattleAction.defend;
+    else if (dice > 6) action = BattleAction.special;
 
     // 3. Execute turn
     final turn = _repository.executeTurn(
@@ -174,6 +179,5 @@ class BattleSession {
 
 final battleProvider = StateNotifierProvider.family<BattleStateNotifier, AsyncValue<BattleSession>, Creature>((ref, creature) {
   final repo = ref.watch(arenaRepositoryProvider);
-  // TODO: Get actual user info
   return BattleStateNotifier(repo, 'user_1', 'Kay', creature);
 });

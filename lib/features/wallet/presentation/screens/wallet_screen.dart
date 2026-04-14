@@ -30,7 +30,7 @@ class WalletScreen extends ConsumerWidget {
         ],
       ),
       body: RefreshIndicator(
-        onPressed: () async {
+        onRefresh: () async {
           ref.invalidate(balanceProvider(_userId));
           ref.invalidate(transactionsProvider(_userId));
         },
