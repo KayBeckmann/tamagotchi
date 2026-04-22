@@ -62,7 +62,7 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 - [x] Kreatur-Katalog erstellen (mindestens 8–12 verschiedene Tiere/Monster)
   - Tiere: Katze, Hund, Drache, Hase, Fuchs, Vogel
   - Monster: Schleim, Goblin, Geist, Elementar, Steingolem, Schattenkatze
-- [ ] Sprite-Sheets / Animationen pro Kreatur (Idle, Fressen, Schlafen, Spielen, Kämpfen)
+- [x] Sprite-Sheets / Animationen pro Kreatur (Idle, Fressen, Schlafen, Spielen, Kämpfen)
 - [x] Kreatur-Erstellungsflow: Typ wählen → Name vergeben → Bestätigen
 - [x] Jeder User kann bis zu **5 Kreaturen** besitzen (erweiterbar durch Achievements auf max. 10)
 - [x] Aktive Kreatur auswählen
