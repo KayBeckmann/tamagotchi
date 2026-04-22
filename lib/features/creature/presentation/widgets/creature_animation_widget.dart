@@ -247,17 +247,122 @@ class _CreaturePainter extends CustomPainter {
       shadowPaint,
     );
 
-    // Draw unique appendages behind body
-    _drawAppendagesBehind(canvas, center, radius);
+    // Adult glow aura (behind everything)
+    if (stage == DevelopmentStage.adult) {
+      _drawAdultAura(canvas, center, radius);
+    }
 
-    // Body
+    // Baby/Child: no complex appendages yet
+    if (stage != DevelopmentStage.baby) {
+      _drawAppendagesBehind(canvas, center, radius);
+    }
+
+    // Body (babies are extra chubby)
     _drawBody(canvas, center, radius);
 
-    // Appendages in front
-    _drawAppendagesFront(canvas, center, radius);
+    if (stage != DevelopmentStage.baby) {
+      _drawAppendagesFront(canvas, center, radius);
+    } else {
+      _drawBabyDetails(canvas, center, radius);
+    }
 
-    // Face
+    // Face (babies get simplified)
     _drawFace(canvas, center, radius);
+
+    // Stage badge (teen+)
+    if (stage == DevelopmentStage.teen) {
+      _drawTeenBadge(canvas, center, radius);
+    } else if (stage == DevelopmentStage.adult) {
+      _drawAdultCrown(canvas, center, radius);
+    }
+  }
+
+  void _drawAdultAura(Canvas canvas, Offset center, double radius) {
+    final auraPaint = Paint()
+      ..color = _primaryColor.withValues(alpha: 0.18)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12);
+    canvas.drawCircle(center, radius * 1.35, auraPaint);
+    final pulse = math.sin(secondaryAnim * math.pi * 2) * 0.05 + 0.95;
+    final auraPaint2 = Paint()
+      ..color = _secondaryColor.withValues(alpha: 0.12)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
+    canvas.drawCircle(center, radius * 1.2 * pulse, auraPaint2);
+  }
+
+  void _drawBabyDetails(Canvas canvas, Offset center, double radius) {
+    // Small nub ears/stubs to hint at what the creature will become
+    final paint = Paint()..color = _primaryColor;
+    for (final side in [-1.0, 1.0]) {
+      canvas.drawCircle(
+        Offset(center.dx + side * radius * 0.7, center.dy - radius * 0.6),
+        radius * 0.2,
+        paint,
+      );
+    }
+  }
+
+  void _drawTeenBadge(Canvas canvas, Offset center, double radius) {
+    // Small star badge bottom-right of creature
+    final bx = center.dx + radius * 0.75;
+    final by = center.dy + radius * 0.6;
+    final badgePaint = Paint()..color = Colors.amber;
+    final badgeBorder = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5;
+    canvas.drawCircle(Offset(bx, by), radius * 0.22, badgePaint);
+    canvas.drawCircle(Offset(bx, by), radius * 0.22, badgeBorder);
+    // Star icon inside
+    _drawStar(canvas, Offset(bx, by), radius * 0.13, Colors.white);
+  }
+
+  void _drawAdultCrown(Canvas canvas, Offset center, double radius) {
+    final crownY = center.dy - radius * 1.05;
+    final crownPaint = Paint()..color = const Color(0xFFFFD700);
+    final crownBorder = Paint()
+      ..color = const Color(0xFFB8860B)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.2;
+
+    final path = Path();
+    final w = radius * 0.7;
+    path.moveTo(center.dx - w, crownY + radius * 0.22);
+    path.lineTo(center.dx - w, crownY - radius * 0.08);
+    path.lineTo(center.dx - w * 0.45, crownY + radius * 0.08);
+    path.lineTo(center.dx, crownY - radius * 0.22);
+    path.lineTo(center.dx + w * 0.45, crownY + radius * 0.08);
+    path.lineTo(center.dx + w, crownY - radius * 0.08);
+    path.lineTo(center.dx + w, crownY + radius * 0.22);
+    path.close();
+    canvas.drawPath(path, crownPaint);
+    canvas.drawPath(path, crownBorder);
+
+    // Crown gems
+    for (final x in [center.dx - w * 0.5, center.dx, center.dx + w * 0.5]) {
+      canvas.drawCircle(Offset(x, crownY + radius * 0.08), radius * 0.07,
+          Paint()..color = _accentColor);
+    }
+  }
+
+  void _drawStar(Canvas canvas, Offset center, double radius, Color color) {
+    final paint = Paint()..color = color;
+    final path = Path();
+    for (var i = 0; i < 5; i++) {
+      final outerAngle = -math.pi / 2 + i * 2 * math.pi / 5;
+      final innerAngle = outerAngle + math.pi / 5;
+      final outer = Offset(
+        center.dx + math.cos(outerAngle) * radius,
+        center.dy + math.sin(outerAngle) * radius,
+      );
+      final inner = Offset(
+        center.dx + math.cos(innerAngle) * radius * 0.45,
+        center.dy + math.sin(innerAngle) * radius * 0.45,
+      );
+      if (i == 0) path.moveTo(outer.dx, outer.dy) else path.lineTo(outer.dx, outer.dy);
+      path.lineTo(inner.dx, inner.dy);
+    }
+    path.close();
+    canvas.drawPath(path, paint);
   }
 
   void _drawBody(Canvas canvas, Offset center, double radius) {
@@ -277,18 +382,34 @@ class _CreaturePainter extends CustomPainter {
 
   void _drawRoundBody(Canvas canvas, Offset center, double radius,
       Paint main, Paint highlight) {
-    canvas.drawCircle(center, radius, main);
-    // Belly highlight
-    canvas.drawCircle(
-      Offset(center.dx, center.dy + radius * 0.15),
-      radius * 0.65,
-      highlight,
-    );
+    if (stage == DevelopmentStage.baby) {
+      // Extra chubby oval for babies
+      canvas.drawOval(
+        Rect.fromCenter(center: center, width: radius * 2.1, height: radius * 2.2),
+        main,
+      );
+      canvas.drawOval(
+        Rect.fromCenter(
+          center: Offset(center.dx, center.dy + radius * 0.2),
+          width: radius * 1.4,
+          height: radius * 1.5,
+        ),
+        highlight,
+      );
+    } else {
+      canvas.drawCircle(center, radius, main);
+      canvas.drawCircle(
+        Offset(center.dx, center.dy + radius * 0.15),
+        radius * 0.65,
+        highlight,
+      );
+    }
   }
 
-  void _drawBlobBody(Canvas canvas, Offset center, double radius,
-      Paint main) {
-    final squish = 1.0 + primaryAnim * 0.08;
+  void _drawBlobBody(Canvas canvas, Offset center, double radius, Paint main) {
+    // Babies are even squishier
+    final baseSquish = stage == DevelopmentStage.baby ? 1.12 : 1.0;
+    final squish = baseSquish + primaryAnim * 0.08;
     canvas.drawOval(
       Rect.fromCenter(
         center: center,
@@ -570,9 +691,10 @@ class _CreaturePainter extends CustomPainter {
       return;
     }
 
-    final eyeY = center.dy - radius * 0.18;
-    final eyeX = radius * 0.32;
-    final eyeRadius = radius * 0.18;
+    // Babies have larger, simpler button eyes
+    final eyeY = center.dy - radius * (stage == DevelopmentStage.baby ? 0.1 : 0.18);
+    final eyeX = radius * (stage == DevelopmentStage.baby ? 0.28 : 0.32);
+    final eyeRadius = radius * (stage == DevelopmentStage.baby ? 0.22 : 0.18);
 
     if (animState == CreatureAnimationState.sleeping) {
       // Closed eyes (arcs)

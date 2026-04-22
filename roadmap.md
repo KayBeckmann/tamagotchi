@@ -99,14 +99,14 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 - [x] **Kind** (Tag 4–7) – alle Grundinteraktionen verfügbar
 - [x] **Jugendlich** (Tag 8–14) – Training und Arena freigeschaltet
 - [x] **Erwachsen** (ab Tag 15) – Turnier-Teilnahme freigeschaltet
-- [ ] Visuelle Veränderung pro Stufe (andere Sprites/Größe)
+- [x] Visuelle Veränderung pro Stufe (andere Sprites/Größe)
 
 ---
 
 ## Phase 4: UI/UX – Hauptbildschirme
 
 ### 4.1 Hauptscreen (Tamagotchi-Ansicht)
-- [ ] Kreatur-Animation (animiertes Sprite, zentral)
+- [x] Kreatur-Animation (animiertes Sprite, zentral)
 - [x] Statusleisten (Hunger, Glück, Energie, Gesundheit, Sauberkeit)
 - [x] Aktionsbuttons (Füttern, Spielen, Schlafen, Waschen, Trainieren)
 - [x] Hintergrund wechselt je nach Tageszeit (Tag/Nacht-Zyklus)
