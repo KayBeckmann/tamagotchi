@@ -44,7 +44,11 @@ void run(List<String> args) async {
   // then it reschedules itself every 30 minutes.
   await pod.futureCallWithDelay(
     FutureCallNames.creatureStatusUpdate.name,
-    null,
+    Greeting(
+      message: 'initial-tick',
+      author: 'startup',
+      timestamp: DateTime.now(),
+    ),
     const Duration(seconds: 30),
   );
 }

@@ -1,70 +1,52 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:tamagotchi_server_server/src/generated/protocol.dart';
 
 import '../services/creature_status_service.dart';
 import '../../server.dart' show FutureCallNames;
 
 /// Future call that periodically updates all creature statuses.
 ///
-/// This runs every 30 minutes (configurable) and:
-/// - Decreases hunger, happiness, energy, cleanliness over time
-/// - Checks for sickness conditions
-/// - Handles death from neglect (7 days with health = 0)
-/// - Updates development stages based on age
-/// - Recovers creatures from tournament stun
-class CreatureStatusUpdateCall extends FutureCall<void> {
-  /// Interval between status updates.
+/// Runs every 30 minutes via self-scheduling. Uses Greeting as the
+/// carrier type because Serverpod requires a SerializableModel.
+class CreatureStatusUpdateCall extends FutureCall<Greeting> {
   static const updateInterval = Duration(minutes: 30);
 
   @override
-  Future<void> invoke(Session session, void object) async {
+  Future<void> invoke(Session session, Greeting? object) async {
     session.log('Starting creature status update...', level: LogLevel.info);
 
     try {
-      // Process all creatures
       final result = await CreatureStatusService.processAllCreatures(session);
 
       if (result.success) {
         session.log(
-          'Creature status update completed successfully. '
-          'Processed: ${result.processed}, '
-          'Became sick: ${result.becameSick}, '
-          'Deaths: ${result.deaths}, '
-          'Stage changes: ${result.stageChanges}',
+          'Status update OK – processed: ${result.processed}, '
+          'sick: ${result.becameSick}, deaths: ${result.deaths}',
           level: LogLevel.info,
         );
       } else {
         session.log(
-          'Creature status update completed with errors: ${result.errors}',
+          'Status update finished with ${result.errors} error(s)',
           level: LogLevel.warning,
         );
       }
 
-      // Schedule next run
       await _scheduleNextRun(session);
-    } catch (e, stackTrace) {
-      session.log(
-        'Creature status update failed: $e\n$stackTrace',
-        level: LogLevel.error,
-      );
-
-      // Still schedule next run even on failure
+    } catch (e, st) {
+      session.log('Status update failed: $e\n$st', level: LogLevel.error);
       await _scheduleNextRun(session);
     }
   }
 
-  /// Schedule the next status update run.
   Future<void> _scheduleNextRun(Session session) async {
     await session.serverpod.futureCallWithDelay(
       FutureCallNames.creatureStatusUpdate.name,
-      null,
+      Greeting(
+        message: 'status-tick',
+        author: 'scheduler',
+        timestamp: DateTime.now(),
+      ),
       updateInterval,
-    );
-
-    session.log(
-      'Next creature status update scheduled in ${updateInterval.inMinutes} minutes',
-      level: LogLevel.debug,
     );
   }
 }
-
-// FutureCallNames is defined in server.dart to avoid duplicate declarations.
