@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../providers/reward_provider.dart';
 
 import '../../../../core/utils/responsive_layout.dart';
 import '../../../creature/presentation/providers/creature_provider.dart';
@@ -20,7 +21,16 @@ class ArenaScreen extends ConsumerWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Arena')),
+      appBar: AppBar(
+        title: const Text('Arena'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.leaderboard),
+            tooltip: 'Rangliste',
+            onPressed: () => context.push('/arena/leaderboard'),
+          ),
+        ],
+      ),
       body: ResponsiveLayout(
         mobile: _buildBody(
           context, theme, ref, creatureState, historyAsync,
@@ -175,16 +185,14 @@ class _StatsRow extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final entries = historyAsync.valueOrNull ?? [];
-    final wins = entries.where((e) => e.playerWon).length;
-    final losses = entries.where((e) => !e.playerWon).length;
+    final rewardStats = ref.watch(rewardProvider);
 
     return Row(
       children: [
         Expanded(
           child: _StatCard(
             label: 'Siege',
-            value: '$wins',
+            value: '${rewardStats.battlesWon}',
             icon: Icons.emoji_events,
             color: Colors.amber,
           ),
@@ -192,19 +200,19 @@ class _StatsRow extends ConsumerWidget {
         const SizedBox(width: 12),
         Expanded(
           child: _StatCard(
-            label: 'Niederlagen',
-            value: '$losses',
-            icon: Icons.close,
-            color: Colors.red,
+            label: 'ELO',
+            value: '${rewardStats.eloRating}',
+            icon: Icons.leaderboard,
+            color: Colors.blue,
           ),
         ),
         const SizedBox(width: 12),
         Expanded(
           child: _StatCard(
-            label: 'Kämpfe',
-            value: '${entries.length}',
-            icon: Icons.sports_kabaddi,
-            color: Colors.blue,
+            label: 'Level',
+            value: '${rewardStats.level}',
+            icon: Icons.star,
+            color: Colors.amber.shade700,
           ),
         ),
       ],
