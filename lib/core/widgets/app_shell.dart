@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class AppShell extends StatelessWidget {
+import '../../features/notifications/presentation/notification_provider.dart';
+
+class AppShell extends ConsumerWidget {
   final Widget child;
 
   const AppShell({super.key, required this.child});
@@ -16,9 +19,10 @@ class AppShell extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isWide = MediaQuery.sizeOf(context).width >= 900;
     final index = _currentIndex(context);
+    final unreadCount = ref.watch(unreadNotificationCountProvider);
 
     final destinations = const [
       NavigationDestination(icon: Icon(Icons.pets), label: 'Kreatur'),
@@ -35,6 +39,16 @@ class AppShell extends StatelessWidget {
             ))
         .toList();
 
+    Widget notificationButton() => Badge(
+          isLabelVisible: unreadCount > 0,
+          label: Text('$unreadCount'),
+          child: IconButton(
+            icon: const Icon(Icons.notifications_outlined),
+            tooltip: 'Benachrichtigungen',
+            onPressed: () => context.push('/notifications'),
+          ),
+        );
+
     if (isWide) {
       return Scaffold(
         body: Row(
@@ -46,6 +60,7 @@ class AppShell extends StatelessWidget {
               leading: Column(
                 children: [
                   const SizedBox(height: 8),
+                  notificationButton(),
                   IconButton(
                     icon: const Icon(Icons.account_balance_wallet),
                     tooltip: 'Wallet',
@@ -92,6 +107,15 @@ class AppShell extends StatelessWidget {
         onDestinationSelected: (i) => _onTap(context, i),
         destinations: destinations,
       ),
+      floatingActionButton: unreadCount > 0
+          ? FloatingActionButton.small(
+              onPressed: () => context.push('/notifications'),
+              child: Badge(
+                label: Text('$unreadCount'),
+                child: const Icon(Icons.notifications),
+              ),
+            )
+          : null,
     );
   }
 

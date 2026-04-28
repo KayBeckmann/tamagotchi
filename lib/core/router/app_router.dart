@@ -16,6 +16,7 @@ import '../../features/arena/presentation/screens/leaderboard_screen.dart';
 import '../../features/creature/domain/models/creature.dart';
 import '../../features/tournament/presentation/screens/tournament_screen.dart';
 import '../../features/tournament/presentation/screens/tournament_detail_screen.dart';
+import '../../features/notifications/presentation/notification_center_screen.dart';
 import '../../features/shop/presentation/screens/shop_screen.dart';
 import '../../features/inventory/presentation/screens/inventory_screen.dart';
 import '../../features/social/presentation/screens/social_screen.dart';
@@ -162,6 +163,11 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/settings',
             name: 'settings',
             builder: (context, state) => const SettingsScreen(),
+          ),
+          GoRoute(
+            path: '/notifications',
+            name: 'notifications',
+            builder: (context, state) => const NotificationCenterScreen(),
           ),
         ],
       ),

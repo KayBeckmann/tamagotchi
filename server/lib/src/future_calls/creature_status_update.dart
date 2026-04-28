@@ -1,6 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 
 import '../services/creature_status_service.dart';
+import '../../server.dart' show FutureCallNames;
 
 /// Future call that periodically updates all creature statuses.
 ///
@@ -66,7 +67,4 @@ class CreatureStatusUpdateCall extends FutureCall<void> {
   }
 }
 
-/// Names of all future calls in the server.
-enum FutureCallNames {
-  creatureStatusUpdate,
-}
+// FutureCallNames is defined in server.dart to avoid duplicate declarations.

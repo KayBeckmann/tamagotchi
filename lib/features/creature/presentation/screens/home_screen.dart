@@ -11,6 +11,7 @@ import '../../domain/models/item.dart';
 import '../../data/creature_repository.dart';
 import '../providers/creature_provider.dart';
 import '../widgets/cooldown_indicator.dart';
+import '../../../../features/notifications/presentation/notification_provider.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -21,6 +22,17 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final creatureState = ref.watch(creatureListProvider(_userId));
+
+    // Trigger creature status notification check when active creature is loaded
+    ref.listen(creatureListProvider(_userId), (_, next) {
+      if (next is CreatureListLoaded && next.activeCreature != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ref
+              .read(notificationProvider.notifier)
+              .checkCreature(next.activeCreature!);
+        });
+      }
+    });
 
     return Scaffold(
       appBar: AppBar(
