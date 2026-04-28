@@ -9,6 +9,10 @@ import '../../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../../features/creature/presentation/screens/home_screen.dart';
 import '../../features/creature/presentation/screens/creature_selection_screen.dart';
 import '../../features/arena/presentation/screens/arena_screen.dart';
+import '../../features/arena/presentation/screens/matchmaking_screen.dart';
+import '../../features/arena/presentation/screens/battle_screen.dart';
+import '../../features/arena/presentation/screens/battle_result_screen.dart';
+import '../../features/creature/domain/models/creature.dart';
 import '../../features/tournament/presentation/screens/tournament_screen.dart';
 import '../../features/shop/presentation/screens/shop_screen.dart';
 import '../../features/inventory/presentation/screens/inventory_screen.dart';
@@ -84,6 +88,29 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/arena',
             name: 'arena',
             builder: (context, state) => const ArenaScreen(),
+            routes: [
+              GoRoute(
+                path: 'matchmaking',
+                name: 'matchmaking',
+                builder: (context, state) {
+                  final creature = state.extra as Creature;
+                  return MatchmakingScreen(
+                    playerCreature: creature,
+                    playerElo: 1000,
+                  );
+                },
+              ),
+              GoRoute(
+                path: 'battle',
+                name: 'battle',
+                builder: (context, state) => const BattleScreen(),
+              ),
+              GoRoute(
+                path: 'result',
+                name: 'battleResult',
+                builder: (context, state) => const BattleResultScreen(),
+              ),
+            ],
           ),
           GoRoute(
             path: '/tournament',
