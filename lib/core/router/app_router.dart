@@ -15,6 +15,7 @@ import '../../features/arena/presentation/screens/battle_result_screen.dart';
 import '../../features/arena/presentation/screens/leaderboard_screen.dart';
 import '../../features/creature/domain/models/creature.dart';
 import '../../features/tournament/presentation/screens/tournament_screen.dart';
+import '../../features/tournament/presentation/screens/tournament_detail_screen.dart';
 import '../../features/shop/presentation/screens/shop_screen.dart';
 import '../../features/inventory/presentation/screens/inventory_screen.dart';
 import '../../features/social/presentation/screens/social_screen.dart';
@@ -122,6 +123,15 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/tournament',
             name: 'tournament',
             builder: (context, state) => const TournamentScreen(),
+            routes: [
+              GoRoute(
+                path: ':id',
+                name: 'tournamentDetail',
+                builder: (context, state) => TournamentDetailScreen(
+                  tournamentId: state.pathParameters['id']!,
+                ),
+              ),
+            ],
           ),
           GoRoute(
             path: '/shop',
