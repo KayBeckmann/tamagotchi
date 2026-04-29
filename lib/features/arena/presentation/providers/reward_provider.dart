@@ -58,6 +58,11 @@ class RewardNotifier extends StateNotifier<UserRewardStats> {
     );
   }
 
+  /// Add satoshis directly (e.g., from daily rewards or creature care).
+  void addSatoshis(int amount) {
+    state = state.copyWith(satoshiBalance: state.satoshiBalance + amount);
+  }
+
   void _recalcLevel() {
     final level = XpSystem.levelFromTotalXp(state.totalXp);
     final progress = XpSystem.progressInLevel(state.totalXp, level);

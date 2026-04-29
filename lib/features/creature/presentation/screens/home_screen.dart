@@ -12,15 +12,30 @@ import '../../data/creature_repository.dart';
 import '../providers/creature_provider.dart';
 import '../widgets/cooldown_indicator.dart';
 import '../../../../features/notifications/presentation/notification_provider.dart';
+import '../../../../features/daily_reward/presentation/widgets/daily_reward_dialog.dart';
+import '../../../../features/daily_reward/presentation/providers/daily_reward_provider.dart';
+import '../../../../features/arena/presentation/providers/reward_provider.dart';
 
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
-  // TODO: Get actual user ID from auth
+  @override
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   static const _userId = 'user_1';
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) showDailyRewardDialogIfNeeded(context, ref);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final creatureState = ref.watch(creatureListProvider(_userId));
 
     // Trigger creature status notification check when active creature is loaded
@@ -259,9 +274,10 @@ class HomeScreen extends ConsumerWidget {
             weightGain,
           );
           ref.read(creatureListProvider(_userId).notifier).loadCreatures();
+          ref.read(rewardProvider.notifier).addSatoshis(20);
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('${creature.name} wurde gefüttert!')),
+              SnackBar(content: Text('${creature.name} wurde gefüttert! +20 Sats')),
             );
           }
         },
@@ -356,12 +372,23 @@ class HomeScreen extends ConsumerWidget {
       }
       ref.read(creatureListProvider(_userId).notifier).loadCreatures();
 
+      // Award small satoshi bonus for creature care
+      final careReward = switch (action) {
+        'play' => 30,
+        'clean' => 25,
+        'train' => 75,
+        _ => 0,
+      };
+      if (careReward > 0) {
+        ref.read(rewardProvider.notifier).addSatoshis(careReward);
+      }
+
       if (context.mounted) {
         final message = switch (action) {
-          'play' => '${creature.name} hat gespielt!',
+          'play' => '${creature.name} hat gespielt! +30 Sats',
           'sleep' => '${creature.name} schläft jetzt.',
           'wake' => '${creature.name} ist aufgewacht!',
-          'clean' => '${creature.name} ist jetzt sauber!',
+          'clean' => '${creature.name} ist jetzt sauber! +25 Sats',
           _ => 'Aktion ausgeführt!',
         };
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
