@@ -6,7 +6,10 @@ import 'package:intl/intl.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../creature/presentation/providers/creature_provider.dart';
 import '../../../creature/domain/models/creature.dart';
+import '../../../arena/presentation/providers/reward_provider.dart';
 import '../providers/profile_provider.dart';
+import '../providers/achievement_provider.dart';
+import '../../domain/achievement.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -125,6 +128,10 @@ class ProfileScreen extends ConsumerWidget {
             _StatRow('Benutzer-ID', '#${profile.id}'),
           ],
         ),
+        const SizedBox(height: 16),
+
+        // Achievements
+        _buildAchievementsSection(context, ref, profile, statistics),
         const SizedBox(height: 16),
 
         // Creatures Overview
@@ -356,6 +363,117 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
+  Widget _buildAchievementsSection(
+    BuildContext context,
+    WidgetRef ref,
+    UserProfile profile,
+    UserStatistics statistics,
+  ) {
+    final theme = Theme.of(context);
+    final rewardStats = ref.watch(rewardProvider);
+    final achievements = ref.watch(achievementProvider);
+
+    // Trigger evaluation against current stats
+    ref.read(achievementProvider.notifier).evaluate(
+      rewardStats,
+      statistics.aliveCreatures + statistics.deadCreatures,
+      statistics.aliveCreatures,
+    );
+
+    final unlocked = achievements.where((a) => a.isUnlocked).toList();
+    final locked = achievements.where((a) => !a.isUnlocked).toList();
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.emoji_events, color: theme.colorScheme.primary),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Errungenschaften',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    '${unlocked.length} / ${achievements.length}',
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: theme.colorScheme.onPrimaryContainer,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            // Overall progress bar
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: LinearProgressIndicator(
+                value: achievements.isEmpty
+                    ? 0
+                    : unlocked.length / achievements.length,
+                minHeight: 8,
+                backgroundColor: theme.colorScheme.surfaceContainerHighest,
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Unlocked achievements
+            if (unlocked.isNotEmpty) ...[
+              Text(
+                'Freigeschaltet',
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: theme.colorScheme.primary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              ...unlocked.map((a) => _AchievementTile(achievement: a, unlocked: true)),
+              const SizedBox(height: 12),
+            ],
+            // Locked achievements
+            if (locked.isNotEmpty) ...[
+              Text(
+                'Noch offen',
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              ...locked.take(5).map((a) => _AchievementTile(achievement: a, unlocked: false)),
+              if (locked.length > 5)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text(
+                    '… und ${locked.length - 5} weitere',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildCreaturesSection(BuildContext context, WidgetRef ref, String userId) {
     final theme = Theme.of(context);
     final creatureState = ref.watch(creatureListProvider(userId));
@@ -454,6 +572,114 @@ class ProfileScreen extends ConsumerWidget {
               : null,
         ),
       )).toList(),
+    );
+  }
+}
+
+class _AchievementTile extends StatelessWidget {
+  final Achievement achievement;
+  final bool unlocked;
+
+  const _AchievementTile({required this.achievement, required this.unlocked});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final dateFormat = DateFormat('dd.MM.yyyy');
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: unlocked
+                  ? theme.colorScheme.primaryContainer
+                  : theme.colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Center(
+              child: Text(
+                achievement.icon,
+                style: TextStyle(
+                  fontSize: 22,
+                  color: unlocked ? null : null,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      achievement.name,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: unlocked
+                            ? null
+                            : theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    if (unlocked) ...[
+                      const SizedBox(width: 6),
+                      Icon(
+                        Icons.check_circle,
+                        size: 14,
+                        color: theme.colorScheme.primary,
+                      ),
+                    ],
+                  ],
+                ),
+                Text(
+                  achievement.description,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                if (!unlocked && achievement.progress > 0) ...[
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(4),
+                          child: LinearProgressIndicator(
+                            value: achievement.progress,
+                            minHeight: 6,
+                            backgroundColor:
+                                theme.colorScheme.surfaceContainerHighest,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        achievement.progressLabel,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+                if (unlocked && achievement.unlockedAt != null)
+                  Text(
+                    'Erhalten am ${dateFormat.format(achievement.unlockedAt!)}',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
