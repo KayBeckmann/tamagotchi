@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../data/social_repository.dart';
+import '../domain/models/social.dart';
 
 class SocialScreen extends StatelessWidget {
   const SocialScreen({super.key});
@@ -32,45 +35,13 @@ class SocialScreen extends StatelessWidget {
 
 // --- Friends Tab ---
 
-class _FriendsTab extends StatelessWidget {
+class _FriendsTab extends ConsumerWidget {
   const _FriendsTab();
 
-  static const _friends = [
-    _Friend(
-      name: 'Spieler_42',
-      creatureName: 'Flamara',
-      level: 12,
-      isOnline: true,
-    ),
-    _Friend(
-      name: 'DragonMaster',
-      creatureName: 'Voltix',
-      level: 23,
-      isOnline: true,
-    ),
-    _Friend(
-      name: 'Pixel_Queen',
-      creatureName: 'Aquari',
-      level: 8,
-      isOnline: false,
-    ),
-    _Friend(
-      name: 'CryptoKnight',
-      creatureName: 'Schatti',
-      level: 15,
-      isOnline: false,
-    ),
-    _Friend(
-      name: 'NaturFreund',
-      creatureName: 'Blattling',
-      level: 6,
-      isOnline: false,
-    ),
-  ];
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final friendsState = ref.watch(friendsProvider('user_1'));
 
     return Column(
       children: [
@@ -92,229 +63,174 @@ class _FriendsTab extends StatelessWidget {
           child: SizedBox(
             width: double.infinity,
             child: OutlinedButton.icon(
-              onPressed: () {
-                // TODO: Freund hinzufuegen
-              },
+              onPressed: () => _showAddFriendDialog(context, ref),
               icon: const Icon(Icons.person_add),
-              label: const Text('Freund hinzufuegen'),
+              label: const Text('Freund hinzufügen'),
             ),
           ),
         ),
         const SizedBox(height: 8),
         Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: _friends.length,
-            itemBuilder: (context, index) {
-              final friend = _friends[index];
-              return Card(
-                margin: const EdgeInsets.only(bottom: 8),
-                child: ListTile(
-                  leading: Stack(
-                    children: [
-                      CircleAvatar(
-                        backgroundColor:
-                            theme.colorScheme.primaryContainer,
-                        child: Text(
-                          friend.name[0].toUpperCase(),
-                          style: TextStyle(
-                            color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        right: 0,
-                        bottom: 0,
-                        child: Container(
-                          width: 12,
-                          height: 12,
-                          decoration: BoxDecoration(
-                            color: friend.isOnline
-                                ? Colors.green
-                                : Colors.grey,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: theme.colorScheme.surface,
-                              width: 2,
+          child: friendsState.when(
+            data: (friends) => ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: friends.length,
+              itemBuilder: (context, index) {
+                final friend = friends[index];
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  child: ListTile(
+                    leading: Stack(
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: theme.colorScheme.primaryContainer,
+                          child: Text(
+                            friend.username[0].toUpperCase(),
+                            style: TextStyle(
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  title: Text(
-                    friend.name,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text(
-                    '${friend.creatureName} · Level ${friend.level}',
-                  ),
-                  trailing: PopupMenuButton<String>(
-                    onSelected: (value) {
-                      // TODO: Aktion ausfuehren
-                    },
-                    itemBuilder: (context) => [
-                      const PopupMenuItem(
-                        value: 'battle',
-                        child: ListTile(
-                          leading: Icon(Icons.shield),
-                          title: Text('Herausfordern'),
-                          dense: true,
+                        Positioned(
+                          right: 0,
+                          bottom: 0,
+                          child: Container(
+                            width: 12,
+                            height: 12,
+                            decoration: BoxDecoration(
+                              color: friend.isOnline ? Colors.green : Colors.grey,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: theme.colorScheme.surface, width: 2),
+                            ),
+                          ),
                         ),
-                      ),
-                      const PopupMenuItem(
-                        value: 'trade',
-                        child: ListTile(
-                          leading: Icon(Icons.swap_horiz),
-                          title: Text('Handeln'),
-                          dense: true,
-                        ),
-                      ),
-                      const PopupMenuItem(
-                        value: 'remove',
-                        child: ListTile(
-                          leading: Icon(Icons.person_remove),
-                          title: Text('Entfernen'),
-                          dense: true,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
+                    title: Text(friend.username, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    subtitle: Text('${friend.creatureName} · Level ${friend.creatureLevel}'),
+                    trailing: const Icon(Icons.chevron_right),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (err, _) => Center(child: Text('Fehler: $err')),
           ),
         ),
       ],
     );
   }
-}
 
-class _Friend {
-  final String name;
-  final String creatureName;
-  final int level;
-  final bool isOnline;
-
-  const _Friend({
-    required this.name,
-    required this.creatureName,
-    required this.level,
-    required this.isOnline,
-  });
+  void _showAddFriendDialog(BuildContext context, WidgetRef ref) {
+    final controller = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Freund hinzufügen'),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(labelText: 'Benutzername'),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Abbrechen')),
+          FilledButton(
+            onPressed: () async {
+              await ref.read(socialRepositoryProvider).addFriend('user_1', controller.text);
+              ref.invalidate(friendsProvider('user_1'));
+              if (context.mounted) Navigator.pop(context);
+            },
+            child: const Text('Hinzufügen'),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 // --- Ranking Tab ---
 
-class _RankingTab extends StatelessWidget {
+class _RankingTab extends ConsumerWidget {
   const _RankingTab();
 
-  static const _rankings = [
-    _RankEntry(rank: 1, name: 'ProGamer99', level: 45, points: 98500),
-    _RankEntry(rank: 2, name: 'DragonMaster', level: 23, points: 72300),
-    _RankEntry(rank: 3, name: 'MegaFighter', level: 38, points: 65100),
-    _RankEntry(rank: 4, name: 'StarPlayer', level: 30, points: 54200),
-    _RankEntry(rank: 5, name: 'Spieler_42', level: 12, points: 43800),
-    _RankEntry(rank: 6, name: 'CryptoKnight', level: 15, points: 38900),
-    _RankEntry(rank: 7, name: 'Pixel_Queen', level: 8, points: 31200),
-  ];
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final rankingsState = ref.watch(rankingsProvider);
+    final playerRankState = ref.watch(playerRankProvider('user_1'));
 
     return Column(
       children: [
-        // Player's own rank
-        Container(
-          width: double.infinity,
-          margin: const EdgeInsets.all(16),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                theme.colorScheme.primaryContainer,
-                theme.colorScheme.tertiaryContainer,
+        playerRankState.when(
+          data: (entry) => Container(
+            width: double.infinity,
+            margin: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [theme.colorScheme.primaryContainer, theme.colorScheme.tertiaryContainer],
+              ),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              children: [
+                Text(
+                  '#${entry.rank}',
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Dein Rang', style: theme.textTheme.labelMedium),
+                      Text('${entry.points} Punkte', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.trending_up, color: Colors.green),
               ],
             ),
-            borderRadius: BorderRadius.circular(16),
           ),
-          child: Row(
-            children: [
-              Text(
-                '#42',
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.primary,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Dein Rang',
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                    Text(
-                      '15.200 Punkte',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const Icon(Icons.trending_up, color: Colors.green),
-            ],
-          ),
+          loading: () => const LinearProgressIndicator(),
+          error: (_, __) => const SizedBox.shrink(),
         ),
         Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: _rankings.length,
-            itemBuilder: (context, index) {
-              final entry = _rankings[index];
-              return Card(
-                margin: const EdgeInsets.only(bottom: 4),
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: entry.rank <= 3
-                        ? [
-                            Colors.amber,
-                            Colors.grey.shade400,
-                            Colors.brown.shade300,
-                          ][entry.rank - 1]
-                        : theme.colorScheme.surfaceContainerHighest,
-                    child: Text(
-                      '${entry.rank}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: entry.rank <= 3
-                            ? Colors.white
-                            : theme.colorScheme.onSurface,
+          child: rankingsState.when(
+            data: (rankings) => ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: rankings.length,
+              itemBuilder: (context, index) {
+                final entry = rankings[index];
+                final isMe = entry.name == 'Kay';
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 4),
+                  color: isMe ? theme.colorScheme.primaryContainer.withValues(alpha: 0.3) : null,
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: entry.rank <= 3
+                          ? [Colors.amber, Colors.grey.shade400, Colors.brown.shade300][entry.rank - 1]
+                          : theme.colorScheme.surfaceContainerHighest,
+                      child: Text(
+                        '${entry.rank}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: entry.rank <= 3 ? Colors.white : theme.colorScheme.onSurface,
+                        ),
                       ),
                     ),
+                    title: Text(entry.name, style: TextStyle(fontWeight: isMe ? FontWeight.bold : FontWeight.normal)),
+                    subtitle: Text('Level ${entry.level}'),
+                    trailing: Text('${entry.points} Pkt.', style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.primary)),
                   ),
-                  title: Text(
-                    entry.name,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text('Level ${entry.level}'),
-                  trailing: Text(
-                    '${entry.points} Pkt.',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.primary,
-                    ),
-                  ),
-                ),
-              );
-            },
+                );
+              },
+            ),
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (err, _) => Center(child: Text('Fehler: $err')),
           ),
         ),
       ],
@@ -322,58 +238,15 @@ class _RankingTab extends StatelessWidget {
   }
 }
 
-class _RankEntry {
-  final int rank;
-  final String name;
-  final int level;
-  final int points;
-
-  const _RankEntry({
-    required this.rank,
-    required this.name,
-    required this.level,
-    required this.points,
-  });
-}
-
 // --- Trade Tab ---
 
-class _TradeTab extends StatelessWidget {
+class _TradeTab extends ConsumerWidget {
   const _TradeTab();
 
-  static const _tradeOffers = [
-    _TradeOffer(
-      fromPlayer: 'Spieler_42',
-      offeredItem: 'Goldener Apfel',
-      offeredIcon: Icons.apple,
-      offeredColor: Colors.amber,
-      wantedItem: 'Zauberstab',
-      wantedIcon: Icons.auto_fix_high,
-      wantedColor: Colors.deepPurple,
-    ),
-    _TradeOffer(
-      fromPlayer: 'DragonMaster',
-      offeredItem: 'Wundertrank',
-      offeredIcon: Icons.auto_awesome,
-      offeredColor: Colors.purple,
-      wantedItem: 'Steak x5',
-      wantedIcon: Icons.lunch_dining,
-      wantedColor: Colors.brown,
-    ),
-    _TradeOffer(
-      fromPlayer: 'Pixel_Queen',
-      offeredItem: 'Teddybaer',
-      offeredIcon: Icons.smart_toy,
-      offeredColor: Colors.brown,
-      wantedItem: 'Heiltrank x3',
-      wantedIcon: Icons.science,
-      wantedColor: Colors.green,
-    ),
-  ];
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final tradeOffersState = ref.watch(tradeOffersProvider);
 
     return Column(
       children: [
@@ -394,109 +267,78 @@ class _TradeTab extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Align(
             alignment: Alignment.centerLeft,
-            child: Text(
-              'Aktive Handelsangebote',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            child: Text('Aktive Handelsangebote', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
           ),
         ),
         const SizedBox(height: 8),
         Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: _tradeOffers.length,
-            itemBuilder: (context, index) {
-              final offer = _tradeOffers[index];
-              return Card(
-                margin: const EdgeInsets.only(bottom: 12),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        offer.fromPlayer,
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _TradeItemDisplay(
-                              label: 'Bietet',
-                              itemName: offer.offeredItem,
-                              icon: offer.offeredIcon,
-                              color: offer.offeredColor,
-                            ),
-                          ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 8),
-                            child: Icon(
-                              Icons.swap_horiz,
-                              color: theme.colorScheme.primary,
-                            ),
-                          ),
-                          Expanded(
-                            child: _TradeItemDisplay(
-                              label: 'Sucht',
-                              itemName: offer.wantedItem,
-                              icon: offer.wantedIcon,
-                              color: offer.wantedColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      SizedBox(
-                        width: double.infinity,
-                        child: OutlinedButton(
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Handelsanfrage an ${offer.fromPlayer} gesendet!',
-                                ),
+          child: tradeOffersState.when(
+            data: (offers) => ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: offers.length,
+              itemBuilder: (context, index) {
+                final offer = offers[index];
+                if (offer.status != TradeStatus.open) return const SizedBox.shrink();
+
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Von ${offer.fromUsername}', style: theme.textTheme.labelMedium),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _TradeItemDisplay(
+                                label: 'Bietet',
+                                itemName: '${offer.offeredItemName} x${offer.offeredQuantity}',
+                                icon: Icons.inventory_2,
+                                color: Colors.blue,
                               ),
-                            );
-                          },
-                          child: const Text('Handel annehmen'),
+                            ),
+                            const Icon(Icons.swap_horiz, color: Colors.grey),
+                            Expanded(
+                              child: _TradeItemDisplay(
+                                label: 'Sucht',
+                                itemName: '${offer.wantedItemName} x${offer.wantedQuantity}',
+                                icon: Icons.shopping_basket,
+                                color: Colors.orange,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton(
+                            onPressed: () async {
+                              await ref.read(socialRepositoryProvider).acceptTrade('user_1', offer.id);
+                              ref.invalidate(tradeOffersProvider);
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Handel abgeschlossen!')),
+                                );
+                              }
+                            },
+                            child: const Text('Handel annehmen'),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (err, _) => Center(child: Text('Fehler: $err')),
           ),
         ),
       ],
     );
   }
-}
-
-class _TradeOffer {
-  final String fromPlayer;
-  final String offeredItem;
-  final IconData offeredIcon;
-  final Color offeredColor;
-  final String wantedItem;
-  final IconData wantedIcon;
-  final Color wantedColor;
-
-  const _TradeOffer({
-    required this.fromPlayer,
-    required this.offeredItem,
-    required this.offeredIcon,
-    required this.offeredColor,
-    required this.wantedItem,
-    required this.wantedIcon,
-    required this.wantedColor,
-  });
 }
 
 class _TradeItemDisplay extends StatelessWidget {
@@ -515,32 +357,17 @@ class _TradeItemDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
     return Column(
       children: [
-        Text(
-          label,
-          style: theme.textTheme.labelSmall?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
+        Text(label, style: theme.textTheme.labelSmall),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(12),
-          ),
+          decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
           child: Icon(icon, color: color, size: 24),
         ),
         const SizedBox(height: 4),
-        Text(
-          itemName,
-          style: theme.textTheme.bodySmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-          textAlign: TextAlign.center,
-        ),
+        Text(itemName, style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold), textAlign: TextAlign.center),
       ],
     );
   }

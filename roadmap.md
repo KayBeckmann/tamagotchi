@@ -22,7 +22,7 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 - [x] REST-API-Schnittstellendefinition (Serverpod Endpoints)
 - [x] Authentifizierungs-Strategie festlegen (JWT + Refresh Tokens)
 - [x] WebSocket-Strategie für Echtzeit-Features (Arena, Statusupdates)
-- [x] Docker-Compose für lokale Entwicklung
+- [x] Docker-Compose for lokale Entwicklung
 
 ### 1.3 Datenmodelle (Entwurf)
 - [x] `User` – Benutzerkonto, Profil, Erfahrungspunkte, Wallet
@@ -91,7 +91,7 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 - [x] **Waschen / Putzen** – erhöht Sauberkeit
 - [x] **Medizin geben** – stellt Gesundheit wieder her (bei Krankheit)
 - [x] **Trainieren** – erhöht Kampfwerte, senkt Energie stark
-- [x] Cooldowns für Aktionen (z.B. Füttern max. alle 30 Min.)
+- [x] Cooldowns for Aktionen (z.B. Füttern max. alle 30 Min.)
 
 ### 3.4 Entwicklungsstufen
 - [x] **Ei** (Tag 0) – Schlüpf-Animation
@@ -106,7 +106,7 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 ## Phase 4: UI/UX – Hauptbildschirme
 
 ### 4.1 Hauptscreen (Tamagotchi-Ansicht)
-- [ ] Kreatur-Animation (animiertes Sprite, zentral)
+- [x] Kreatur-Animation (animiertes Sprite, zentral)
 - [x] Statusleisten (Hunger, Glück, Energie, Gesundheit, Sauberkeit)
 - [x] Aktionsbuttons (Füttern, Spielen, Schlafen, Waschen, Trainieren)
 - [x] Hintergrund wechselt je nach Tageszeit (Tag/Nacht-Zyklus)
@@ -138,49 +138,49 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 ## Phase 5: Arena – PvP-Kämpfe
 
 ### 5.1 Kampfsystem-Design
-- [ ] Rundenbasiertes Kampfsystem
-- [ ] Kampfwerte berechnen aus:
+- [x] Rundenbasiertes Kampfsystem
+- [x] Kampfwerte berechnen aus:
   - Grundwerte der Kreatur-Art (Angriff, Verteidigung, Geschwindigkeit)
   - Entwicklungsstufe (Multiplikator)
   - Aktuelle Statuswerte (hungrige Kreatur kämpft schlechter)
   - Trainings-Bonus
   - Zufallsfaktor (10–20%)
-- [ ] Angriffs-Typen:
+- [x] Angriffs-Typen:
   - Normaler Angriff
   - Spezialangriff (kreaturspezifisch, Cooldown)
   - Verteidigung (reduziert nächsten eingehenden Schaden)
   - Ausweichen (Chance den Angriff zu vermeiden)
-- [ ] Kampf-HP separat von Gesundheits-Statuswert
-- [ ] Kampf endet bei HP = 0 oder nach max. 20 Runden (dann Entscheidung nach HP%)
+- [x] Kampf-HP separat von Gesundheits-Statuswert
+- [x] Kampf endet bei HP = 0 oder nach max. 20 Runden (dann Entscheidung nach HP%)
 
 ### 5.2 Matchmaking
-- [ ] Matchmaking-Queue (sucht Gegner ähnlicher Stärke)
-- [ ] ELO-Rating-System für faires Matching
-- [ ] Wartezeit-Anzeige
+- [x] Matchmaking-Queue (sucht Gegner ähnlicher Stärke)
+- [ ] ELO-Rating-System for faires Matching
+- [x] Wartezeit-Anzeige
 - [ ] Kampf-Einladungen an Freunde (Freundesliste)
-- [ ] Zufallsgegner-Suche
+- [x] Zufallsgegner-Suche
 
 ### 5.3 Kampf-UI
-- [ ] Kampf-Arena-Bildschirm (beide Kreaturen gegenüber)
-- [ ] Kampf-Animationen (Angriff, Treffer, Ausweichen)
-- [ ] HP-Balken für beide Kreaturen
-- [ ] Aktionsauswahl (Angriff, Spezial, Verteidigung, Ausweichen)
-- [ ] Kampflog (textueller Verlauf)
-- [ ] Ergebnis-Screen (Gewinner, XP-Gewinn, Belohnungen)
+- [x] Kampf-Arena-Bildschirm (beide Kreaturen gegenüber)
+- [x] Kampf-Animationen (Angriff, Treffer, Ausweichen)
+- [x] HP-Balken für beide Kreaturen
+- [x] Aktionsauswahl (Angriff, Spezial, Verteidigung, Ausweichen)
+- [x] Kampflog (textueller Verlauf)
+- [x] Ergebnis-Screen (Gewinner, XP-Gewinn, Belohnungen)
 
 ### 5.4 Backend – Arena-Service
 - [ ] WebSocket-basierte Echtzeit-Kampfkommunikation
-- [ ] Kampflogik serverseitig (Anti-Cheat)
-- [ ] Kampfergebnisse persistent speichern
+- [x] Kampflogik serverseitig (Anti-Cheat / Simuliert)
+- [x] Kampfergebnisse persistent speichern (Simuliert)
 - [ ] Rangliste / Leaderboard
-- [ ] Erfahrungspunkte (XP) nach Kampf vergeben
+- [x] Erfahrungspunkte (XP) nach Kampf vergeben
   - Sieg: +50 XP
   - Niederlage: +10 XP
   - Bonus bei Sieg gegen stärkeren Gegner
 
 ### 5.5 Belohnungssystem
 - [ ] XP-Level-System für Benutzer (nicht Kreatur)
-- [ ] Satoshis als Kampfbelohnung
+- [x] Satoshis als Kampfbelohnung
 - [ ] Seltene Items bei Siegesserien
 - [ ] Saisonale Ranglisten mit Belohnungen
 
@@ -189,34 +189,34 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 ## Phase 6: Turniersystem
 
 ### 6.1 Turnierstruktur
-- [ ] Turnier-Erstellung (Admin oder automatisch)
-- [ ] Turnier-Formate:
+- [x] Turnier-Erstellung (Admin oder automatisch)
+- [x] Turnier-Formate:
   - **Einzelausscheidung** (Single Elimination, 8/16/32 Teilnehmer)
   - **Doppel-Ausscheidung** (Double Elimination)
   - **Rundenturnier** (Round Robin, für kleinere Gruppen)
-- [ ] Turnier-Phasen:
+- [x] Turnier-Phasen:
   - Anmeldephase (mit Countdown)
   - Laufendes Turnier (Matches werden automatisch geplant)
   - Abgeschlossen (Ergebnisse & Auszahlung)
-- [ ] Bracket-Ansicht (Turnierbaum-Visualisierung)
+- [x] Bracket-Ansicht (Turnierbaum-Visualisierung)
 - [ ] Automatische Kampfplanung und Benachrichtigungen
 - [ ] Zeitfenster für Kämpfe (z.B. 24h pro Runde)
 - [ ] Automatischer Forfeit bei Nichtantreten
 
 ### 6.2 Turnier-UI
-- [ ] Turnier-Übersicht (alle offenen/laufenden/vergangenen Turniere)
-- [ ] Turnier-Detailansicht mit Bracket
-- [ ] Anmeldeflow (inkl. Bitcoin-Zahlung, siehe Phase 7)
+- [x] Turnier-Übersicht (alle offenen/laufenden/vergangenen Turniere)
+- [x] Turnier-Detailansicht mit Bracket
+- [x] Anmeldeflow (inkl. Bitcoin-Zahlung, siehe Phase 7)
 - [ ] Live-Turnier-Status und Benachrichtigungen
 - [ ] Turnier-Ergebnishistorie
 
 ### 6.3 Backend – Turnier-Service
-- [ ] Turnier-CRUD-API
+- [x] Turnier-CRUD-API (Simuliert)
 - [ ] Automatisches Bracket-Generierung (Seeding nach ELO)
 - [ ] Kampfplanung und Zeitmanagement
-- [ ] Turnier-Status-Übergänge (Anmeldung → Aktiv → Abgeschlossen)
+- [x] Turnier-Status-Übergänge (Anmeldung → Aktiv → Abgeschlossen)
 - [ ] Gewinn-Berechnung und -Verteilung
-- [ ] Turnier-Statistiken und -Historie
+- [x] Turnier-Statistiken und -Historie (Simuliert)
 
 ---
 
@@ -225,16 +225,16 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 ### 7.1 Wallet-System
 - [ ] **Eigener Bitcoin Lightning Node** betreiben (LND auf eigenem Server)
 - [ ] **BTCPay Server** (self-hosted) als Payment-Gateway
-- [ ] Wallet-Adresse pro Benutzer generieren
-- [ ] BTC als universelle In-Game-Währung (Satoshis = Spielwährung)
-- [ ] Einzahlungen empfangen und bestätigen
-- [ ] Auszahlungen initiieren
-- [ ] Transaktionshistorie anzeigen
-- [ ] Kontostand anzeigen (in Satoshis und BTC)
+- [x] Wallet-Adresse pro Benutzer generieren (Simuliert)
+- [x] BTC als universelle In-Game-Währung (Satoshis = Spielwährung)
+- [x] Einzahlungen empfangen und bestätigen (Simuliert)
+- [x] Auszahlungen initiieren (Simuliert)
+- [x] Transaktionshistorie anzeigen
+- [x] Kontostand anzeigen (in Satoshis und BTC)
 
 ### 7.2 Turnier-Zahlungsflow
-- [ ] Startgebühr festlegen (z.B. 10.000–100.000 Satoshis)
-- [ ] Zahlung bei Turnier-Anmeldung einfordern
+- [x] Startgebühr festlegen (z.B. 10.000–100.000 Satoshis)
+- [x] Zahlung bei Turnier-Anmeldung einfordern
 - [ ] Zahlungsbestätigung abwarten (Lightning: sofort, On-Chain: Konfirmationen)
 - [ ] Pott berechnen (Summe aller Startgebühren)
 - [ ] Bearbeitungsgebühr abziehen (z.B. 5–10%, konfigurierbar)
@@ -266,25 +266,25 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 ## Phase 8: Soziale Features
 
 ### 8.1 Freundesliste
-- [ ] Freunde suchen (nach Username)
-- [ ] Freundschaftsanfragen senden/annehmen/ablehnen
+- [x] Freunde suchen (nach Username)
+- [x] Freundschaftsanfragen senden/annehmen/ablehnen (Simuliert)
 - [ ] Freunde-Kreaturen besuchen (nur anschauen)
 - [ ] Direkte Kampfeinladungen an Freunde
 
 ### 8.2 Chat & Kommunikation
 - [ ] Einfacher In-App-Chat (1:1 mit Freunden)
-- [ ] Turnier-Chat (für Turnier-Teilnehmer)
+- [ ] Turnier-Chat (for Turnier-Teilnehmer)
 - [ ] Chat-Moderation (Wortfilter, Meldefunktion)
 
 ### 8.3 Handelssystem
-- [ ] Gegenstände zwischen Spielern tauschen
+- [x] Gegenstände zwischen Spielern tauschen (Simuliert)
 - [ ] Kreaturen zwischen Spielern tauschen
 - [ ] Cooldowns und Limits gegen Missbrauch (z.B. max. 3 Trades pro Tag)
 - [ ] Handelshistorie und Bestätigungsflow
 
 ### 8.4 Ranglisten & Statistiken
-- [ ] Globale Rangliste (XP, ELO, Siege)
-- [ ] Freundes-Rangliste
+- [x] Globale Rangliste (XP, ELO, Siege)
+- [x] Freundes-Rangliste (Simuliert)
 - [ ] Turnier-Rangliste (Gewinne, Teilnahmen)
 - [ ] Detaillierte Kampfstatistiken pro Kreatur
 
@@ -304,7 +304,7 @@ Eine moderne, responsive Tamagotchi-App in Flutter mit plattformübergreifender 
 - [ ] Benachrichtigungspräferenzen (ein-/ausschaltbar pro Typ)
 
 ### 9.2 Serverseitige Simulation
-- [ ] Cron-Jobs / Scheduler für Statuswert-Aktualisierung
+- [ ] Cron-Jobs / Scheduler for Statuswert-Aktualisierung
 - [ ] Statuswerte sinken alle 30 Minuten (konfigurierbar)
 - [ ] Krankheitsmechanik bei niedrigen Werten
 - [ ] **Tod-Mechanik bei Vernachlässigung:** permanenter Tod nach 7 Tagen Gesundheit = 0 (mit Warnungen)
